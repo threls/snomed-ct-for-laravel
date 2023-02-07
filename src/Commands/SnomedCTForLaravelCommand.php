@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Threls\SnomedCTForLaravel\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class SnomedCTForLaravelCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'snomed-ct-for-laravel';
 
     public $description = 'My command';
 
