@@ -1,0 +1,47 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('snomed_snap_textDefinition', function (Blueprint $table) {
+            $table->bigInteger('id')->primary(); // Immutable
+            $table->dateTime('effectiveTime')->default('2000-01-31 00:00:00');
+            $table->boolean('active');
+            $table->bigInteger('moduleId');
+            $table->bigInteger('conceptId'); // Immutable
+            $table->string('languageCode', 3); // Immutable
+            $table->bigInteger('typeId'); // Immutable
+            $table->text('term');
+            $table->bigInteger('caseSignificanceId');
+
+//            $table->primary(['id', 'effectiveTime']);
+
+//            $table->index(['conceptId'], 'textDefinition_concept');
+//            $table->index(['conceptId', 'languageCode'], 'textDefinition_lang');
+//            $table->index(['term'], 'textDefinition_term');
+        });
+
+
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('snomed_snap_textDefinition');
+    }
+};

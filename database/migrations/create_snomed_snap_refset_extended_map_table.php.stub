@@ -1,0 +1,54 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('snomed_snap_refset_extendedMap', function (Blueprint $table) {
+            $table->char('id', 36); // Immutable
+            $table->dateTime('effectiveTime')->default('2000-01-31 00:00:00');
+            $table->boolean('active');
+            $table->bigInteger('moduleId');
+
+            $table->bigInteger('refsetId'); // Immutable
+            $table->bigInteger('referencedComponentId'); // Immutable
+            $table->integer('mapGroup');
+            $table->integer('mapPriority');
+            $table->string('mapRule');
+            $table->text('mapAdvice');
+            $table->string('mapTarget', 200);
+            $table->bigInteger('correlationId');
+            $table->bigInteger('mapCategoryId');
+
+            $table->primary(['id', 'effectiveTime']);
+
+            // Should indexing be done after all data is imported?
+            // https://laracasts.com/discuss/channels/laravel/migrations-how-can-one-add-an-index-to-an-existing-column
+
+            //$table->index(['referencedComponentId'], 'extendedMap_c');
+            //$table->index(['refsetId', 'referencedComponentId'], 'extendedMap_rc');
+            //$table->index(['refsetId', 'mapTarget'], 'extendedMap_map');
+        });
+
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('snomed_snap_refset_extendedMap');
+    }
+};

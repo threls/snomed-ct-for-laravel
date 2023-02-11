@@ -1,0 +1,57 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('snomed_snap_refset_mrcmAttributeDomain', function (Blueprint $table) {
+            $table->char('id', 36); // Immutable
+            $table->dateTime('effectiveTime')->default('2000-01-31 00:00:00');
+            $table->boolean('active');
+            $table->bigInteger('moduleId');
+
+            $table->bigInteger('refsetId'); // Immutable
+            $table->bigInteger('referencedComponentId'); // Immutable
+
+            $table->bigInteger('domainId');
+            $table->boolean('grouped');
+            $table->string('attributeCardinality');
+            $table->string('attributeInGroupCardinality');
+            $table->bigInteger('ruleStrengthId');
+            $table->bigInteger('contentTypeId');
+
+            $table->primary(['id', 'effectiveTime']);
+
+//            $table->index(['referencedComponentId'], 'mrcmAttributeDomain_c');
+//            $table->index(['refsetId', 'referencedComponentId'], 'mrcmAttributeDomain_rc');
+//            $table->index(['domainId'], 'mrcmAttributeDomain_dom');
+        });
+
+//        $file = base_path('data/SnomedCT_InternationalRF2_PRODUCTION_20230131T120000Z/Snapshot/Refset/Metadata/der2_cissccRefset_MRCMAttributeDomainSnapshot_INT_20230131.txt');
+//
+//        $query = "LOAD DATA LOCAL INFILE '" . $file . "'
+//            INTO TABLE snap_refset_mrcmAttributeDomain
+//            IGNORE 1 ROWS";
+//        DB::connection()->getpdo()->exec($query);
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('snomed_snap_refset_mrcmAttributeDomain');
+    }
+};

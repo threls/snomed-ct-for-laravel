@@ -1,0 +1,46 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+
+return new class extends Migration {
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('snomed_snap_relationship', function (Blueprint $table) {
+            $table->char('id', 36); // Immutable
+            $table->dateTime('effectiveTime')->default('2000-01-31 00:00:00');
+            $table->boolean('active');
+            $table->bigInteger('moduleId');
+
+            $table->bigInteger('sourceId');
+            $table->bigInteger('destinationId');
+            $table->integer('relationshipGroup');
+            $table->bigInteger('typeId');
+            $table->bigInteger('characteristicTypeId');
+            $table->bigInteger('modifierId');
+
+//            $table->index(['destinationId', 'typeId', 'sourceId'], 'relationship_dest');
+//            $table->index(['sourceId', 'typeId', 'destinationId'], 'relationship_source');
+
+            $table->primary(['id', 'effectiveTime']);
+        });
+
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('snomed_snap_relationship');
+    }
+};
