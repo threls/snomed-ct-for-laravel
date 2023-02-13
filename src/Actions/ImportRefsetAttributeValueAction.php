@@ -14,7 +14,6 @@ class ImportRefsetAttributeValueAction extends BaseImportAction
     protected static function getFile(): string
     {
         return Config::get('snomed-ct-for-laravel.import.files.refsetAttributeValue');
-
     }
 
     protected static function map(array $row): array

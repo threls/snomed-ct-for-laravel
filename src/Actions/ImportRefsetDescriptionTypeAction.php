@@ -14,7 +14,6 @@ class ImportRefsetDescriptionTypeAction extends BaseImportAction
     protected static function getFile(): string
     {
         return Config::get('snomed-ct-for-laravel.import.files.refsetDescriptionType');
-
     }
 
     protected static function map(array $row): array

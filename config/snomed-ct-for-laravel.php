@@ -4,7 +4,7 @@
 return [
     'models' => [
         'index' => \Threls\SnomedCTForLaravel\Models\SnomedIndex::class,
-        'semantic_tag' => \Threls\SnomedCTForLaravel\Models\SnomedSemanticTag::class
+        'semantic_tag' => \Threls\SnomedCTForLaravel\Models\SnomedSemanticTag::class,
     ],
     'import' => [
         'files' => [
@@ -27,6 +27,6 @@ return [
             'relationship' => env('SNOMED_IMPORT_RELATIONSHIP', base_path('data/SnomedCT_InternationalRF2_PRODUCTION_20230131T120000Z/Snapshot/Terminology/sct2_Relationship_Snapshot_INT_20230131.txt')),
             'statedRelationship' => env('SNOMED_IMPORT_STATED_RELATIONSHIP', base_path('data/SnomedCT_InternationalRF2_PRODUCTION_20230131T120000Z/Snapshot/Terminology/sct2_StatedRelationship_Snapshot_INT_20230131.txt')),
             'textDefinition' => env('SNOMED_IMPORT_TEXT_DEFINITION', base_path('data/SnomedCT_InternationalRF2_PRODUCTION_20230131T120000Z/Snapshot/Terminology/sct2_TextDefinition_Snapshot-en_INT_20230131.txt')),
-        ]
-    ]
+        ],
+    ],
 ];

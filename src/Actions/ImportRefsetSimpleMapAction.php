@@ -14,7 +14,6 @@ class ImportRefsetSimpleMapAction extends BaseImportAction
     protected static function getFile(): string
     {
         return Config::get('snomed-ct-for-laravel.import.files.refsetSimpleMap');
-
     }
 
     protected static function map(array $row): array

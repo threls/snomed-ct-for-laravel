@@ -2,9 +2,9 @@
 
 namespace Threls\SnomedCTForLaravel\Commands;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Threls\SnomedCTForLaravel\Models\SnomedSemanticTag;
 
 class SnomedIndexCommand extends Command

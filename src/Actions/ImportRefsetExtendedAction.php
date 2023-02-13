@@ -9,7 +9,6 @@ class ImportRefsetExtendedAction extends BaseImportAction
     protected static function getFile(): string
     {
         return Config::get('snomed-ct-for-laravel.import.files.refsetExtended');
-
     }
 
     protected static function map(array $row): array

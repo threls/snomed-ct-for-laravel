@@ -9,7 +9,6 @@ class ImportRelationshipAction extends BaseImportAction
     protected static function getFile(): string
     {
         return Config::get('snomed-ct-for-laravel.import.files.relationship');
-
     }
 
     protected static function map(array $row): array

@@ -14,7 +14,6 @@ class ImportRefsetOwlExpressionAction extends BaseImportAction
     protected static function getFile(): string
     {
         return Config::get('snomed-ct-for-laravel.import.files.refsetOwlExpression');
-
     }
 
     protected static function map(array $row): array
