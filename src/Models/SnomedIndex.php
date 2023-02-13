@@ -12,6 +12,8 @@ class SnomedIndex extends Model
 
     public $timestamps = false;
 
+    protected $dates = ['effective_time'];
+
     public function semanticTag(): BelongsTo
     {
         return $this->belongsTo(Config::get('snomed-ct-for-laravel.models.semantic_tag'), 'snomed_semantic_tag_id');
