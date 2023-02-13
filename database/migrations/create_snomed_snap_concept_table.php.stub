@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -13,12 +12,8 @@ return new class extends Migration
      */
     public function up()
     {
-        // https://confluence.ihtsdotools.org/display/DOCRELFMT/4.2.1+Concept+File+Specification
-
-        // The date format used is YYYYMMDD.
-        // Where time is included the format is YYYYMMDDThhmmssZ
         Schema::create('snomed_snap_concept', function (Blueprint $table) {
-            $table->bigInteger('id'); // Immutable
+            $table->bigInteger('id');
             $table->dateTime('effectiveTime')->default('2000-01-31 00:00:00');
             $table->boolean('active');
             $table->bigInteger('moduleId');

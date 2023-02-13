@@ -15,7 +15,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('snomed_snap_statedRelationship', function (Blueprint $table) {
-            $table->char('id', 36); // Immutable
+            $table->char('id', 36);
             $table->dateTime('effectiveTime')->default('2000-01-31 00:00:00');
             $table->boolean('active');
             $table->bigInteger('moduleId');
@@ -26,9 +26,6 @@ return new class extends Migration
             $table->bigInteger('typeId');
             $table->bigInteger('characteristicTypeId');
             $table->bigInteger('modifierId');
-
-//            $table->index(['destinationId', 'typeId', 'sourceId'], 'statedRelationship_dest');
-//            $table->index(['sourceId', 'typeId', 'destinationId'], 'statedRelationship_source');
 
             $table->primary(['id', 'effectiveTime']);
         });

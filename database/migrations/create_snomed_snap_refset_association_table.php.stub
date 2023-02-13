@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -15,21 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('snomed_snap_refset_association', function (Blueprint $table) {
-            $table->char('id', 36); // Immutable
+            $table->char('id', 36);
             $table->dateTime('effectiveTime')->default('2000-01-31 00:00:00');
             $table->boolean('active');
             $table->bigInteger('moduleId');
 
-            $table->bigInteger('refsetId'); // Immutable
-            $table->bigInteger('referencedComponentId'); // Immutable
+            $table->bigInteger('refsetId');
+            $table->bigInteger('referencedComponentId');
             $table->bigInteger('targetComponentId');
             $table->primary(['id', 'effectiveTime']);
-
-            // Should indexing be done after all data is imported?
-            // https://laracasts.com/discuss/channels/laravel/migrations-how-can-one-add-an-index-to-an-existing-column
-
-            //$table->index(['referencedComponentId'], 'association_c');
-            //$table->index(['refsetId', 'referencedComponentId'], 'association_rc');
         });
 
     }

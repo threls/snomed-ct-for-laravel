@@ -16,20 +16,15 @@ return new class extends Migration {
         // https://confluence.ihtsdotools.org/display/DOCRELFMT/4.2.2+Description+File+Specification
 
         Schema::create('snomed_snap_description', function (Blueprint $table) {
-            $table->bigInteger('id')->primary(); // Immutable
+            $table->bigInteger('id')->primary();
             $table->dateTime('effectiveTime')->default('2000-01-31 00:00:00');
             $table->boolean('active');
             $table->bigInteger('moduleId');
-            $table->bigInteger('conceptId'); // Immutable
-            $table->string('languageCode', 3); // Immutable
-            $table->bigInteger('typeId'); // Immutable
+            $table->bigInteger('conceptId');
+            $table->string('languageCode', 3);
+            $table->bigInteger('typeId');
             $table->text('term');
             $table->bigInteger('caseSignificanceId');
-//            $table->primary(['id', 'effectiveTime']);
-
-            //$table->index(['conceptId'], 'description_concept');
-            //$table->index(['conceptId', 'languageCode'], 'description_lang');
-            //$table->index(['term'], 'description_term');
         });
 
     }

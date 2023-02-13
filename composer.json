@@ -61,10 +61,7 @@
         "laravel": {
             "providers": [
                 "Threls\\SnomedCTForLaravel\\SnomedCTForLaravelServiceProvider"
-            ],
-            "aliases": {
-                "SnomedCTForLaravel": "Threls\\SnomedCTForLaravel\\Facades\\SnomedCTForLaravel"
-            }
+            ]
         }
     },
     "minimum-stability": "dev",

@@ -15,20 +15,17 @@ return new class extends Migration
     public function up()
     {
         Schema::create('snomed_snap_refset_mrcmModuleScope', function (Blueprint $table) {
-            $table->char('id', 36); // Immutable
+            $table->char('id', 36);
             $table->dateTime('effectiveTime')->default('2000-01-31 00:00:00');
             $table->boolean('active');
             $table->bigInteger('moduleId');
 
-            $table->bigInteger('refsetId'); // Immutable
-            $table->bigInteger('referencedComponentId'); // Immutable
+            $table->bigInteger('refsetId');
+            $table->bigInteger('referencedComponentId');
 
             $table->bigInteger('mrcmRuleRefsetId');
 
             $table->primary(['id', 'effectiveTime']);
-
-//            $table->index(['referencedComponentId'], 'mrcmModuleScope_c');
-//            $table->index(['refsetId', 'referencedComponentId'], 'mrcmModuleScope_rc');
         });
 
     }

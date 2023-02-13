@@ -16,21 +16,14 @@ return new class extends Migration {
         // https://confluence.ihtsdotools.org/display/DOCRELFMT/5.2.2.1+Language+Reference+Set
 
         Schema::create('snomed_snap_refset_language', function (Blueprint $table) {
-            $table->bigInteger('id')->primary(); // Immutable
+            $table->bigInteger('id')->primary();
             $table->dateTime('effectiveTime')->default('2000-01-31 00:00:00');
             $table->boolean('active');
             $table->bigInteger('moduleId');
 
-            $table->bigInteger('refsetId'); // Immutable
-            $table->bigInteger('referencedComponentId')->index(); // Immutable
+            $table->bigInteger('refsetId');
+            $table->bigInteger('referencedComponentId')->index();
             $table->bigInteger('acceptabilityId');
-            //$table->primary(['id', 'effectiveTime']);
-
-            // Should indexing be done after all data is imported?
-            // https://laracasts.com/discuss/channels/laravel/migrations-how-can-one-add-an-index-to-an-existing-column
-
-            //$table->index(['referencedComponentId'], 'language_c');
-            //$table->index(['refsetId', 'referencedComponentId'], 'language_rc');
         });
 
 

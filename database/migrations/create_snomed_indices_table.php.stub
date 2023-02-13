@@ -8,13 +8,13 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('snomed_index', function (Blueprint $table) {
-            $table->bigInteger('id')->primary(); // Immutable
+            $table->bigInteger('id')->primary();
             $table->dateTime('effective_time')->default('2000-01-31 00:00:00');
-            $table->bigInteger('concept_id'); // Immutable
-            $table->bigInteger('type_id'); // Immutable
+            $table->bigInteger('concept_id');
+            $table->bigInteger('type_id');
             $table->text('term');
             $table->bigInteger('snomed_semantic_tag_id')->references('id')->on('snomed_semantic_tags')->nullable();
-            $table->bigInteger('refset_id'); // Immutable
+            $table->bigInteger('refset_id');
             $table->bigInteger('acceptability_id');
         });
     }

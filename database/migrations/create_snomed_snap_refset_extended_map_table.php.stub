@@ -15,13 +15,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('snomed_snap_refset_extendedMap', function (Blueprint $table) {
-            $table->char('id', 36); // Immutable
+            $table->char('id', 36);
             $table->dateTime('effectiveTime')->default('2000-01-31 00:00:00');
             $table->boolean('active');
             $table->bigInteger('moduleId');
 
-            $table->bigInteger('refsetId'); // Immutable
-            $table->bigInteger('referencedComponentId'); // Immutable
+            $table->bigInteger('refsetId');
+            $table->bigInteger('referencedComponentId');
             $table->integer('mapGroup');
             $table->integer('mapPriority');
             $table->string('mapRule');
@@ -31,13 +31,6 @@ return new class extends Migration
             $table->bigInteger('mapCategoryId');
 
             $table->primary(['id', 'effectiveTime']);
-
-            // Should indexing be done after all data is imported?
-            // https://laracasts.com/discuss/channels/laravel/migrations-how-can-one-add-an-index-to-an-existing-column
-
-            //$table->index(['referencedComponentId'], 'extendedMap_c');
-            //$table->index(['refsetId', 'referencedComponentId'], 'extendedMap_rc');
-            //$table->index(['refsetId', 'mapTarget'], 'extendedMap_map');
         });
 
     }

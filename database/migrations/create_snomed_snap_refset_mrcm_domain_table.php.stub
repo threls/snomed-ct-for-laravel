@@ -15,13 +15,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('snomed_snap_refset_mrcmDomain', function (Blueprint $table) {
-            $table->char('id', 36); // Immutable
+            $table->char('id', 36);
             $table->dateTime('effectiveTime')->default('2000-01-31 00:00:00');
             $table->boolean('active');
             $table->bigInteger('moduleId');
 
-            $table->bigInteger('refsetId'); // Immutable
-            $table->bigInteger('referencedComponentId'); // Immutable
+            $table->bigInteger('refsetId');
+            $table->bigInteger('referencedComponentId');
 
             $table->string('domainConstraint');
             $table->string('parentDomain');
@@ -32,9 +32,6 @@ return new class extends Migration
             $table->string('guideURL');
 
             $table->primary(['id', 'effectiveTime']);
-
-//            $table->index(['referencedComponentId'], 'mrcmDomain_c');
-//            $table->index(['refsetId', 'referencedComponentId'], 'mrcmDomain_rc');
         });
 
     }
