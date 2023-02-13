@@ -10,6 +10,9 @@ class SnomedIndex extends Model
 {
     protected $table = 'snomed_index';
 
+    public $timestamps = false;
+
+
     public function semanticTag(): BelongsTo
     {
         return $this->belongsTo(Config::get('snomed-ct-for-laravel.models.semantic_tag'),'snomed_semantic_tag_id');
