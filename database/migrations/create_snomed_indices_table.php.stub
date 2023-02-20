@@ -1,0 +1,26 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    public function up()
+    {
+        Schema::create('snomed_index', function (Blueprint $table) {
+            $table->bigInteger('id')->primary();
+            $table->dateTime('effective_time')->default('2000-01-31 00:00:00');
+            $table->bigInteger('concept_id');
+            $table->bigInteger('type_id');
+            $table->text('term');
+            $table->bigInteger('snomed_semantic_tag_id')->references('id')->on('snomed_semantic_tags')->nullable();
+            $table->bigInteger('refset_id');
+            $table->bigInteger('acceptability_id');
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('snomed_index');
+    }
+};
