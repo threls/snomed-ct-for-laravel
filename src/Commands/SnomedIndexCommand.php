@@ -71,7 +71,7 @@ class SnomedIndexCommand extends Command
             $semanticTagId = null;
 
             if ($row->typeId == 900000000000003001) {
-                preg_match('#\((.*?)\)#', $row->term, $match);
+                preg_match('/\([a-z\s]*\)$/', $row->term, $match);
                 $semanticTagId = $this->getSemanticTagId($match[1]);
             }
 
