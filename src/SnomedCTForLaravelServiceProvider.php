@@ -38,7 +38,6 @@ class SnomedCTForLaravelServiceProvider extends PackageServiceProvider
                 'create_snomed_snap_refset_simple_map_table',
                 'create_snomed_snap_stated_relationship_table',
                 'create_snomed_text_definition_table',
-                'create_snomed_semantic_tags_table',
                 'create_snomed_indices_table',
             ])->runsMigrations()
             ->hasCommands([

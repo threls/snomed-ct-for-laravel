@@ -5,7 +5,6 @@ namespace Threls\SnomedCTForLaravel\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Threls\SnomedCTForLaravel\Models\SnomedSemanticTag;
 
 class SnomedIndexCommand extends Command
 {
@@ -13,12 +12,9 @@ class SnomedIndexCommand extends Command
 
     protected $description = 'Command description';
 
-    protected Collection $semanticTags;
-
     public function __construct()
     {
         parent::__construct();
-        $this->semanticTags = new Collection();
     }
 
     public function handle()
@@ -38,7 +34,7 @@ class SnomedIndexCommand extends Command
             ->where('snomed_snap_refset_language.active', 1)
             ->select('snomed_snap_description.id', 'snomed_snap_description.conceptId', 'snomed_snap_description.typeId', 'snomed_snap_description.term', 'snomed_snap_refset_language.refsetId', 'snomed_snap_refset_language.acceptabilityId')
             ->orderBy('snomed_snap_description.id')
-            ->chunk(5000, fn ($rows) => $this->index($rows));
+            ->chunk(5000, fn($rows) => $this->index($rows));
     }
 
     public function indexTextDefinitions()
@@ -49,43 +45,31 @@ class SnomedIndexCommand extends Command
             ->where('snomed_snap_refset_language.active', 1)
             ->select('snomed_snap_textDefinition.id', 'snomed_snap_textDefinition.conceptId', 'snomed_snap_textDefinition.typeId', 'snomed_snap_textDefinition.term', 'snomed_snap_refset_language.refsetId', 'snomed_snap_refset_language.acceptabilityId')
             ->orderBy('snomed_snap_textDefinition.id')
-            ->chunk(5000, fn ($rows) => $this->index($rows));
+            ->chunk(5000, fn($rows) => $this->index($rows));
     }
 
-    protected function getSemanticTagId(string $semanticTag)
-    {
-        $exists = $this->semanticTags->where('label', $semanticTag)->first();
-        if ($exists != null) {
-            return $exists->id;
-        } else {
-            $tag = SnomedSemanticTag::firstOrCreate(['label' => $semanticTag]);
-            $this->semanticTags->push($tag);
-
-            return $tag->id;
-        }
-    }
 
     public function index(Collection $chunk)
     {
         $records = $chunk->map(function ($row) {
-            $semanticTagId = null;
-
+            $semanticTag = null;
             if ($row->typeId == 900000000000003001) {
-                preg_match('/\([a-z\s]*\)$/', $row->term, $match);
-                $semanticTagId = $this->getSemanticTagId($match[1]);
+                preg_match('/\([a-zA-Z\/\s]*\)$/', $row->term, $match);
+                if (count($match) != 0) {
+                    $semanticTag = substr($match[0], 1, -1);
+                }
             }
-
             return [
                 'id' => $row->id,
                 'concept_id' => $row->conceptId,
                 'type_id' => $row->typeId,
                 'term' => $row->term,
                 'refset_id' => $row->refsetId,
-                'snomed_semantic_tag_id' => $semanticTagId,
+                'semantic_tag' => $semanticTag,
                 'acceptability_id' => $row->acceptabilityId,
             ];
         })->toArray();
 
-        DB::table('snomed_index')->upsert($records, ['id'], ['concept_id', 'type_id', 'term', 'refset_id', 'acceptability_id', 'snomed_semantic_tag_id']);
+        DB::table('snomed_index')->upsert($records, ['id'], ['concept_id', 'type_id', 'term', 'refset_id', 'acceptability_id', 'semantic_tag']);
     }
 }

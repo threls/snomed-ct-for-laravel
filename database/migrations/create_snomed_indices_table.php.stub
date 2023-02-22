@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->bigInteger('concept_id');
             $table->bigInteger('type_id');
             $table->text('term');
-            $table->bigInteger('snomed_semantic_tag_id')->references('id')->on('snomed_semantic_tags')->nullable();
+            $table->string('semantic_tag')->nullable();
             $table->bigInteger('refset_id');
             $table->bigInteger('acceptability_id');
         });

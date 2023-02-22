@@ -4,7 +4,6 @@
 return [
     'models' => [
         'index' => \Threls\SnomedCTForLaravel\Models\SnomedIndex::class,
-        'semantic_tag' => \Threls\SnomedCTForLaravel\Models\SnomedSemanticTag::class,
     ],
     'import' => [
         'files' => [
