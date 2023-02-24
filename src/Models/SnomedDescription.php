@@ -4,7 +4,7 @@ namespace Threls\SnomedCTForLaravel\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SnapTextDefinition extends Model
+class SnomedDescription extends Model
 {
-    protected $table = 'snomed_snap_textDefinition';
+    protected $table = 'snomed_description';
 }

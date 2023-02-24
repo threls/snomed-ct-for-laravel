@@ -13,20 +13,16 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('snomed_snap_relationship', function (Blueprint $table) {
-            $table->char('id', 36);
+        Schema::create('snomed_description', function (Blueprint $table) {
+            $table->id();
             $table->dateTime('effectiveTime')->default('2000-01-31 00:00:00');
             $table->boolean('active');
-            $table->bigInteger('moduleId');
-
-            $table->bigInteger('sourceId');
-            $table->bigInteger('destinationId');
-            $table->integer('relationshipGroup');
-            $table->bigInteger('typeId');
-            $table->bigInteger('characteristicTypeId');
-            $table->bigInteger('modifierId');
-
-            $table->primary(['id', 'effectiveTime']);
+            $table->unsignedBigInteger('moduleId');
+            $table->unsignedBigInteger('conceptId');
+            $table->string('languageCode', 3);
+            $table->unsignedBigInteger('typeId');
+            $table->text('term');
+            $table->unsignedBigInteger('caseSignificanceId');
         });
 
     }
@@ -38,6 +34,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('snomed_snap_relationship');
+        Schema::drop('snomed_description');
     }
 };

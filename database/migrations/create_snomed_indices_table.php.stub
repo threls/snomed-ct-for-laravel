@@ -7,20 +7,20 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up()
     {
-        Schema::create('snomed_index', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+        Schema::create('snomed_indices', function (Blueprint $table) {
+            $table->id();
             $table->dateTime('effective_time')->default('2000-01-31 00:00:00');
-            $table->bigInteger('concept_id');
-            $table->bigInteger('type_id');
+            $table->unsignedBigInteger('concept_id');
+            $table->unsignedBigInteger('type_id');
             $table->text('term');
             $table->string('semantic_tag')->nullable();
-            $table->bigInteger('refset_id');
-            $table->bigInteger('acceptability_id');
+            $table->unsignedBigInteger('refset_id');
+            $table->unsignedBigInteger('acceptability_id');
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('snomed_index');
+        Schema::dropIfExists('snomed_indices');
     }
 };

@@ -14,16 +14,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('snomed_snap_textDefinition', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+        Schema::create('snomed_textDefinition', function (Blueprint $table) {
+            $table->id();
             $table->dateTime('effectiveTime')->default('2000-01-31 00:00:00');
             $table->boolean('active');
-            $table->bigInteger('moduleId');
-            $table->bigInteger('conceptId');
+            $table->unsignedBigInteger('moduleId');
+            $table->unsignedBigInteger('conceptId');
             $table->string('languageCode', 3);
-            $table->bigInteger('typeId');
+            $table->unsignedBigInteger('typeId');
             $table->text('term');
-            $table->bigInteger('caseSignificanceId');
+            $table->unsignedBigInteger('caseSignificanceId');
         });
 
 
@@ -36,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('snomed_snap_textDefinition');
+        Schema::dropIfExists('snomed_textDefinition');
     }
 };

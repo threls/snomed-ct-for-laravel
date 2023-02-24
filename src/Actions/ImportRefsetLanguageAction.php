@@ -27,7 +27,7 @@ class ImportRefsetLanguageAction extends BaseImportAction
 
     protected static function upsertTable(): string
     {
-        return 'snomed_snap_refset_language';
+        return 'snomed_refset_language';
     }
 
     protected static function upsertUniqueBy(): array

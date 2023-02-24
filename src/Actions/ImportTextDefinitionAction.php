@@ -8,7 +8,7 @@ class ImportTextDefinitionAction extends BaseImportAction
 {
     protected static function upsertTable(): string
     {
-        return 'snomed_snap_textDefinition';
+        return 'snomed_textDefinition';
     }
 
     protected static function getFile(): string
