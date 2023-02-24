@@ -34,7 +34,7 @@ class SnomedIndexCommand extends Command
             ->where('snomed_refset_language.active', 1)
             ->select('snomed_description.id', 'snomed_description.conceptId', 'snomed_description.typeId', 'snomed_description.term', 'snomed_refset_language.refsetId', 'snomed_refset_language.acceptabilityId')
             ->orderBy('snomed_description.id')
-            ->chunk(5000, fn($rows) => $this->index($rows));
+            ->chunk(5000, fn ($rows) => $this->index($rows));
     }
 
     public function indexTextDefinitions()
@@ -45,9 +45,8 @@ class SnomedIndexCommand extends Command
             ->where('snomed_refset_language.active', 1)
             ->select('snomed_textDefinition.id', 'snomed_textDefinition.conceptId', 'snomed_textDefinition.typeId', 'snomed_textDefinition.term', 'snomed_refset_language.refsetId', 'snomed_refset_language.acceptabilityId')
             ->orderBy('snomed_textDefinition.id')
-            ->chunk(5000, fn($rows) => $this->index($rows));
+            ->chunk(5000, fn ($rows) => $this->index($rows));
     }
-
 
     public function index(Collection $chunk)
     {
@@ -59,6 +58,7 @@ class SnomedIndexCommand extends Command
                     $semanticTag = substr($match[0], 1, -1);
                 }
             }
+
             return [
                 'id' => $row->id,
                 'concept_id' => $row->conceptId,
