@@ -13,20 +13,16 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('snomed_snap_refset_owlExpression', function (Blueprint $table) {
-            $table->char('id', 36);
+        Schema::create('snomed_refset_language', function (Blueprint $table) {
+            $table->unsignedBigInteger('id')->primary();
             $table->dateTime('effectiveTime')->default('2000-01-31 00:00:00');
             $table->boolean('active');
-            $table->bigInteger('moduleId');
+            $table->unsignedBigInteger('moduleId');
 
-            $table->bigInteger('refsetId');
-            $table->bigInteger('referencedComponentId');
-
-            $table->text('owlExpression');
-
-            $table->primary(['id', 'effectiveTime']);
+            $table->unsignedBigInteger('refsetId');
+            $table->unsignedBigInteger('referencedComponentId')->index();
+            $table->unsignedBigInteger('acceptabilityId');
         });
-
     }
 
     /**
@@ -36,6 +32,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('snomed_snap_refset_owlExpression');
+        Schema::dropIfExists('snomed_refset_language');
     }
 };

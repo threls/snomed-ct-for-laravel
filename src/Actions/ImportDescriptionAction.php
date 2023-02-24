@@ -28,7 +28,7 @@ class ImportDescriptionAction extends BaseImportAction
 
     protected static function upsertTable(): string
     {
-        return 'snomed_snap_description';
+        return 'snomed_description';
     }
 
     protected static function upsertUniqueBy(): array

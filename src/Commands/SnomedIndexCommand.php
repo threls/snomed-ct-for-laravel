@@ -10,7 +10,7 @@ class SnomedIndexCommand extends Command
 {
     protected $signature = 'snomed:index';
 
-    protected $description = 'Command description';
+    protected $description = 'Build the snomed indices table';
 
     public function __construct()
     {
@@ -28,26 +28,25 @@ class SnomedIndexCommand extends Command
 
     public function indexSnapDefinitions()
     {
-        DB::table('snomed_snap_description')
-            ->join('snomed_snap_refset_language', 'snomed_snap_description.id', '=', 'snomed_snap_refset_language.referencedComponentId')
-            ->where('snomed_snap_description.active', 1)
-            ->where('snomed_snap_refset_language.active', 1)
-            ->select('snomed_snap_description.id', 'snomed_snap_description.conceptId', 'snomed_snap_description.typeId', 'snomed_snap_description.term', 'snomed_snap_refset_language.refsetId', 'snomed_snap_refset_language.acceptabilityId')
-            ->orderBy('snomed_snap_description.id')
-            ->chunk(5000, fn($rows) => $this->index($rows));
+        DB::table('snomed_description')
+            ->join('snomed_refset_language', 'snomed_description.id', '=', 'snomed_refset_language.referencedComponentId')
+            ->where('snomed_description.active', 1)
+            ->where('snomed_refset_language.active', 1)
+            ->select('snomed_description.id', 'snomed_description.conceptId', 'snomed_description.typeId', 'snomed_description.term', 'snomed_refset_language.refsetId', 'snomed_refset_language.acceptabilityId')
+            ->orderBy('snomed_description.id')
+            ->chunk(5000, fn ($rows) => $this->index($rows));
     }
 
     public function indexTextDefinitions()
     {
-        DB::table('snomed_snap_textDefinition')
-            ->join('snomed_snap_refset_language', 'snomed_snap_textDefinition.id', '=', 'snomed_snap_refset_language.referencedComponentId')
-            ->where('snomed_snap_textDefinition.active', 1)
-            ->where('snomed_snap_refset_language.active', 1)
-            ->select('snomed_snap_textDefinition.id', 'snomed_snap_textDefinition.conceptId', 'snomed_snap_textDefinition.typeId', 'snomed_snap_textDefinition.term', 'snomed_snap_refset_language.refsetId', 'snomed_snap_refset_language.acceptabilityId')
-            ->orderBy('snomed_snap_textDefinition.id')
-            ->chunk(5000, fn($rows) => $this->index($rows));
+        DB::table('snomed_textDefinition')
+            ->join('snomed_refset_language', 'snomed_textDefinition.id', '=', 'snomed_refset_language.referencedComponentId')
+            ->where('snomed_textDefinition.active', 1)
+            ->where('snomed_refset_language.active', 1)
+            ->select('snomed_textDefinition.id', 'snomed_textDefinition.conceptId', 'snomed_textDefinition.typeId', 'snomed_textDefinition.term', 'snomed_refset_language.refsetId', 'snomed_refset_language.acceptabilityId')
+            ->orderBy('snomed_textDefinition.id')
+            ->chunk(5000, fn ($rows) => $this->index($rows));
     }
-
 
     public function index(Collection $chunk)
     {
@@ -59,6 +58,7 @@ class SnomedIndexCommand extends Command
                     $semanticTag = substr($match[0], 1, -1);
                 }
             }
+
             return [
                 'id' => $row->id,
                 'concept_id' => $row->conceptId,
