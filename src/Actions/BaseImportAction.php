@@ -32,7 +32,7 @@ abstract class BaseImportAction
             fclose($handle);
         })
             ->skip(1)
-            ->chunk(10000)
+            ->chunk(1000)
             ->each(function (LazyCollection $chunk) {
                 $records = $chunk->map(function ($row) {
                     return $this->map($row);
