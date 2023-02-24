@@ -70,6 +70,6 @@ class SnomedIndexCommand extends Command
             ];
         })->toArray();
 
-        DB::table('snomed_index')->upsert($records, ['id'], ['concept_id', 'type_id', 'term', 'refset_id', 'acceptability_id', 'semantic_tag']);
+        DB::table('snomed_indices')->upsert($records, ['id'], ['concept_id', 'type_id', 'term', 'refset_id', 'acceptability_id', 'semantic_tag']);
     }
 }
