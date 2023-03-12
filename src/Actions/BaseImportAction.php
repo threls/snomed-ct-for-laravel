@@ -2,8 +2,10 @@
 
 namespace Threls\SnomedCTForLaravel\Actions;
 
+use Illuminate\Support\Benchmark;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\LazyCollection;
+use Threls\SnomedCTForLaravel\Jobs\ImportSnomedJob;
 
 abstract class BaseImportAction
 {
@@ -32,13 +34,13 @@ abstract class BaseImportAction
             fclose($handle);
         })
             ->skip(1)
-            ->chunk(1000)
+            ->chunk(5000)
             ->each(function (LazyCollection $chunk) {
                 $records = $chunk->map(function ($row) {
                     return $this->map($row);
                 })->toArray();
 
-                DB::table($this->upsertTable())->upsert($records, $this->upsertUniqueBy(), $this->upsertUpdate());
+                ImportSnomedJob::dispatch($this->upsertTable(), $records, $this->upsertUniqueBy(), $this->upsertUpdate());
             });
     }
 }

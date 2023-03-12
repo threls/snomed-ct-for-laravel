@@ -3,8 +3,13 @@
 namespace Threls\SnomedCTForLaravel\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Benchmark;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Threls\SnomedCTForLaravel\Jobs\ImportSnomedJob;
+use Threls\SnomedCTForLaravel\Models\SnomedDescription;
+use Threls\SnomedCTForLaravel\Models\SnomedRefsetLanguage;
+use Threls\SnomedCTForLaravel\Models\SnomedTextDefinition;
 
 class SnomedIndexCommand extends Command
 {
@@ -19,6 +24,8 @@ class SnomedIndexCommand extends Command
 
     public function handle()
     {
+        DB::connection()->disableQueryLog();
+
         $this->info('Indexing Snap Definitions');
         $this->indexSnapDefinitions();
 
@@ -28,48 +35,46 @@ class SnomedIndexCommand extends Command
 
     public function indexSnapDefinitions()
     {
-        DB::table('snomed_description')
-            ->join('snomed_refset_language', 'snomed_description.id', '=', 'snomed_refset_language.referencedComponentId')
-            ->where('snomed_description.active', 1)
-            ->where('snomed_refset_language.active', 1)
-            ->select('snomed_description.id', 'snomed_description.conceptId', 'snomed_description.typeId', 'snomed_description.term', 'snomed_refset_language.refsetId', 'snomed_refset_language.acceptabilityId')
-            ->orderBy('snomed_description.id')
-            ->chunk(5000, fn ($rows) => $this->index($rows));
+        SnomedDescription::with(['snomedRefsetLanguage' => function ($query) {
+            $query->where('active', true);
+        }])->where('active', true)->chunk(1000, fn($rows) => $this->index($rows));
     }
 
     public function indexTextDefinitions()
     {
-        DB::table('snomed_textDefinition')
-            ->join('snomed_refset_language', 'snomed_textDefinition.id', '=', 'snomed_refset_language.referencedComponentId')
-            ->where('snomed_textDefinition.active', 1)
-            ->where('snomed_refset_language.active', 1)
-            ->select('snomed_textDefinition.id', 'snomed_textDefinition.conceptId', 'snomed_textDefinition.typeId', 'snomed_textDefinition.term', 'snomed_refset_language.refsetId', 'snomed_refset_language.acceptabilityId')
-            ->orderBy('snomed_textDefinition.id')
-            ->chunk(5000, fn ($rows) => $this->index($rows));
+        SnomedTextDefinition::with(['snomedRefsetLanguage' => function ($query) {
+            $query->where('active', true);
+        }])->where('active', true)->chunk(1000, fn($rows) => $this->index($rows));
     }
 
     public function index(Collection $chunk)
     {
-        $records = $chunk->map(function ($row) {
+        $records = collect([]);
+
+        $chunk->each(function (SnomedDescription|SnomedTextDefinition $row) use ($records) {
             $semanticTag = null;
             if ($row->typeId == 900000000000003001) {
                 preg_match('/\([a-zA-Z\/\s]*\)$/', $row->term, $match);
                 if (count($match) != 0) {
                     $semanticTag = substr($match[0], 1, -1);
+                    $row->term = preg_replace('/ ' . preg_quote($match[0], '/') . '$/', '', $row->term);
                 }
             }
 
-            return [
-                'id' => $row->id,
-                'concept_id' => $row->conceptId,
-                'type_id' => $row->typeId,
-                'term' => $row->term,
-                'refset_id' => $row->refsetId,
-                'semantic_tag' => $semanticTag,
-                'acceptability_id' => $row->acceptabilityId,
-            ];
-        })->toArray();
+            $row->snomedRefsetLanguage->each(function (SnomedRefsetLanguage $refsetLanguage) use ($row, $semanticTag, $records) {
+                $records->push([
+                    'id' => $row->id,
+                    'concept_id' => $row->conceptId,
+                    'type_id' => $row->typeId,
+                    'term' => $row->term,
+                    'refset_id' => $refsetLanguage->refsetId,
+                    'semantic_tag' => $semanticTag,
+                    'acceptability_id' => $refsetLanguage->acceptabilityId,
+                ]);
+            });
 
-        DB::table('snomed_indices')->upsert($records, ['id'], ['concept_id', 'type_id', 'term', 'refset_id', 'acceptability_id', 'semantic_tag']);
+        });
+
+        ImportSnomedJob::dispatch('snomed_indices', $records->toArray(), ['id'], ['concept_id', 'type_id', 'term', 'refset_id', 'acceptability_id', 'semantic_tag']);
     }
 }
