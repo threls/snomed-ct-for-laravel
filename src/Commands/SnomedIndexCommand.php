@@ -3,6 +3,8 @@
 namespace Threls\SnomedCTForLaravel\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Benchmark;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -33,21 +35,29 @@ class SnomedIndexCommand extends Command
         $this->indexTextDefinitions();
     }
 
-    public function indexSnapDefinitions()
+    public function indexSnapDefinitions(): void
     {
-        SnomedDescription::with(['snomedRefsetLanguage' => function ($query) {
-            $query->where('active', true);
-        }])->where('active', true)->chunk(1000, fn($rows) => $this->index($rows));
+        SnomedDescription::with([
+            'snomedRefsetLanguage' => function (HasMany $query) {
+                $query->where('active', true);
+            }])
+            ->where('active', true)
+            ->whereHas('snomedSnapConcept', fn(Builder $query) => $query->where('active', true))
+            ->chunk(1000, fn($rows) => $this->index($rows));
     }
 
-    public function indexTextDefinitions()
+    public function indexTextDefinitions(): void
     {
-        SnomedTextDefinition::with(['snomedRefsetLanguage' => function ($query) {
-            $query->where('active', true);
-        }])->where('active', true)->chunk(1000, fn($rows) => $this->index($rows));
+        SnomedTextDefinition::with([
+            'snomedRefsetLanguage' => function (HasMany $query) {
+                $query->where('active', true);
+            }])
+            ->where('active', true)
+            ->whereHas('snomedSnapConcept', fn(Builder $query) => $query->where('active', true))
+            ->chunk(1000, fn($rows) => $this->index($rows));
     }
 
-    public function index(Collection $chunk)
+    public function index(Collection $chunk): void
     {
         $records = collect([]);
 
@@ -57,11 +67,15 @@ class SnomedIndexCommand extends Command
                 preg_match('/\([a-zA-Z\/\s]*\)$/', $row->term, $match);
                 if (count($match) != 0) {
                     $semanticTag = substr($match[0], 1, -1);
-                    $row->term = preg_replace('/ ' . preg_quote($match[0], '/') . '$/', '', $row->term);
+                    $row->term = preg_replace('/ '.preg_quote($match[0], '/').'$/', '', $row->term);
                 }
             }
 
-            $row->snomedRefsetLanguage->each(function (SnomedRefsetLanguage $refsetLanguage) use ($row, $semanticTag, $records) {
+            $row->snomedRefsetLanguage->each(function (SnomedRefsetLanguage $refsetLanguage) use (
+                $row,
+                $semanticTag,
+                $records
+            ) {
                 $records->push([
                     'id' => $row->id,
                     'concept_id' => $row->conceptId,
@@ -75,6 +89,7 @@ class SnomedIndexCommand extends Command
 
         });
 
-        ImportSnomedJob::dispatch('snomed_indices', $records->toArray(), ['id'], ['concept_id', 'type_id', 'term', 'refset_id', 'acceptability_id', 'semantic_tag']);
+        ImportSnomedJob::dispatch('snomed_indices', $records->toArray(), ['id'],
+            ['concept_id', 'type_id', 'term', 'refset_id', 'acceptability_id', 'semantic_tag']);
     }
 }

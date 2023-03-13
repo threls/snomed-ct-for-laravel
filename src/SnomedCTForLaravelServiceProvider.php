@@ -24,6 +24,7 @@ class SnomedCTForLaravelServiceProvider extends PackageServiceProvider
                 'create_snomed_text_definition_table',
                 'create_snomed_indices_table',
                 'change_id_to_uuid_of_refset_language',
+                'create_snomed_snap_concept_table'
             ])->runsMigrations()
             ->hasCommands([
                 ImportCommand::class,
