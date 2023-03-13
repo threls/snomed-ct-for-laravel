@@ -3,6 +3,7 @@
 namespace Threls\SnomedCTForLaravel\Commands;
 
 use Illuminate\Console\Command;
+use Threls\SnomedCTForLaravel\Actions\ImportConceptAction;
 use Threls\SnomedCTForLaravel\Actions\ImportDescriptionAction;
 use Threls\SnomedCTForLaravel\Actions\ImportRefsetLanguageAction;
 use Threls\SnomedCTForLaravel\Actions\ImportTextDefinitionAction;
@@ -15,6 +16,9 @@ class ImportCommand extends Command
 
     public function handle()
     {
+        $this->info('Importing Concepts');
+        app(ImportConceptAction::class)->execute();
+
         $this->info('Importing Description');
         app(ImportDescriptionAction::class)->execute();
 

@@ -2,8 +2,6 @@
 
 namespace Threls\SnomedCTForLaravel\Actions;
 
-use Illuminate\Support\Benchmark;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\LazyCollection;
 use Threls\SnomedCTForLaravel\Jobs\ImportSnomedJob;
 
