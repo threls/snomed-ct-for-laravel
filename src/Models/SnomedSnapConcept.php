@@ -12,7 +12,7 @@ class SnomedSnapConcept extends Model
     public $timestamps = false;
 
     public $casts = [
-        'active' => 'boolean'
+        'active' => 'boolean',
     ];
 
     public function snomedDescriptions(): HasMany

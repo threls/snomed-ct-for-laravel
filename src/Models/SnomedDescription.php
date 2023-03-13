@@ -23,7 +23,7 @@ class SnomedDescription extends Model
     ];
 
     protected $casts = [
-      'active' => 'boolean'
+        'active' => 'boolean',
     ];
 
     public $timestamps = false;
