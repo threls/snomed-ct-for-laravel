@@ -15,7 +15,7 @@ class SnomedSnapConcept extends Model
     public $timestamps = false;
 
     public $casts = [
-        'active' => 'bool'
+        'active' => 'bool',
     ];
 
     public function snomedDescriptions(): HasMany

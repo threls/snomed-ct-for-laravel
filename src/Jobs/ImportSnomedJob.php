@@ -18,11 +18,10 @@ class ImportSnomedJob implements ShouldQueue
      */
     public function __construct(
         public string $table,
-        public array  $records,
-        public array  $upsertUniqueBy,
-        public array  $upsertUpdate,
-    )
-    {
+        public array $records,
+        public array $upsertUniqueBy,
+        public array $upsertUpdate,
+    ) {
     }
 
     /**
