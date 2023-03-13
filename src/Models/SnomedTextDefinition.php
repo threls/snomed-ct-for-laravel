@@ -13,7 +13,7 @@ class SnomedTextDefinition extends Model
     public $timestamps = false;
 
     protected $casts = [
-        'active' => 'boolean'
+        'active' => 'boolean',
     ];
 
     public function snomedRefsetLanguage(): HasMany
