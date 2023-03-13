@@ -38,15 +38,15 @@ class SnomedIndexCommand extends Command
     {
         SnomedDescription::where('active', true)
             ->whereHas('snomedSnapConcept', fn (Builder $query) => $query->where('active', true))
-            ->with(['snomedRefsetLanguage' => fn(HasMany $query) => $query->where('active', true)])
+            ->with(['snomedRefsetLanguage' => fn (HasMany $query) => $query->where('active', true)])
             ->chunk(1000, fn ($rows) => $this->index($rows));
     }
 
     public function indexTextDefinitions(): void
     {
-        SnomedTextDefinition::where('active',true)
+        SnomedTextDefinition::where('active', true)
             ->whereHas('snomedSnapConcept', fn (Builder $query) => $query->where('active', true))
-            ->with(['snomedRefsetLanguage' => fn(HasMany $query) => $query->where('active', true)])
+            ->with(['snomedRefsetLanguage' => fn (HasMany $query) => $query->where('active', true)])
             ->chunk(1000, fn ($rows) => $this->index($rows));
     }
 
