@@ -8,14 +8,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SnomedSnapConcept extends Model
 {
-    use HasFactory;
-
     protected $table = 'snomed_snap_concept';
 
     public $timestamps = false;
 
     public $casts = [
-        'active' => 'bool'
+        'active' => 'boolean'
     ];
 
     public function snomedDescriptions(): HasMany

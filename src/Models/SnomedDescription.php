@@ -22,6 +22,10 @@ class SnomedDescription extends Model
         'caseSignificanceId',
     ];
 
+    protected $casts = [
+      'active' => 'boolean'
+    ];
+
     public $timestamps = false;
 
     public function snomedRefsetLanguage(): HasMany

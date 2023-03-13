@@ -12,6 +12,10 @@ class SnomedTextDefinition extends Model
 
     public $timestamps = false;
 
+    protected $casts = [
+        'active' => 'boolean'
+    ];
+
     public function snomedRefsetLanguage(): HasMany
     {
         return $this->hasMany(SnomedRefsetLanguage::class, 'referencedComponentId', 'id');
