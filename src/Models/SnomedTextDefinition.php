@@ -21,7 +21,7 @@ class SnomedTextDefinition extends Model
         return $this->hasMany(SnomedRefsetLanguage::class, 'referencedComponentId', 'id');
     }
 
-    protected function snomedSnapConcept(): BelongsTo
+    public function snomedSnapConcept(): BelongsTo
     {
         return $this->belongsTo(SnomedSnapConcept::class, 'conceptId', 'id');
     }
