@@ -5,7 +5,6 @@ namespace Threls\SnomedCTForLaravel\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Benchmark;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Threls\SnomedCTForLaravel\Jobs\ImportSnomedJob;
@@ -42,8 +41,8 @@ class SnomedIndexCommand extends Command
                 $query->where('active', true);
             }])
             ->where('active', true)
-            ->whereHas('snomedSnapConcept', fn(Builder $query) => $query->where('active', true))
-            ->chunk(1000, fn($rows) => $this->index($rows));
+            ->whereHas('snomedSnapConcept', fn (Builder $query) => $query->where('active', true))
+            ->chunk(1000, fn ($rows) => $this->index($rows));
     }
 
     public function indexTextDefinitions(): void
@@ -53,8 +52,8 @@ class SnomedIndexCommand extends Command
                 $query->where('active', true);
             }])
             ->where('active', true)
-            ->whereHas('snomedSnapConcept', fn(Builder $query) => $query->where('active', true))
-            ->chunk(1000, fn($rows) => $this->index($rows));
+            ->whereHas('snomedSnapConcept', fn (Builder $query) => $query->where('active', true))
+            ->chunk(1000, fn ($rows) => $this->index($rows));
     }
 
     public function index(Collection $chunk): void
@@ -86,7 +85,6 @@ class SnomedIndexCommand extends Command
                     'acceptability_id' => $refsetLanguage->acceptabilityId,
                 ]);
             });
-
         });
 
         ImportSnomedJob::dispatch('snomed_indices', $records->toArray(), ['id'],
