@@ -36,23 +36,17 @@ class SnomedIndexCommand extends Command
 
     public function indexSnapDefinitions(): void
     {
-        SnomedDescription::with([
-            'snomedRefsetLanguage' => function (HasMany $query) {
-                $query->where('active', true);
-            }])
-            ->where('active', true)
+        SnomedDescription::where('active', true)
             ->whereHas('snomedSnapConcept', fn (Builder $query) => $query->where('active', true))
+            ->with(['snomedRefsetLanguage' => fn(HasMany $query) => $query->where('active', true)])
             ->chunk(1000, fn ($rows) => $this->index($rows));
     }
 
     public function indexTextDefinitions(): void
     {
-        SnomedTextDefinition::with([
-            'snomedRefsetLanguage' => function (HasMany $query) {
-                $query->where('active', true);
-            }])
-            ->where('active', true)
+        SnomedTextDefinition::where('active',true)
             ->whereHas('snomedSnapConcept', fn (Builder $query) => $query->where('active', true))
+            ->with(['snomedRefsetLanguage' => fn(HasMany $query) => $query->where('active', true)])
             ->chunk(1000, fn ($rows) => $this->index($rows));
     }
 
