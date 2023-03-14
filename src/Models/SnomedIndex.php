@@ -16,7 +16,7 @@ class SnomedIndex extends Model
     protected $table = 'snomed_indices';
 
     protected $casts = [
-        'type_id' => DescriptionType::class
+        'type_id' => DescriptionType::class,
     ];
 
     public function fullySpecifiedName(): BelongsTo
