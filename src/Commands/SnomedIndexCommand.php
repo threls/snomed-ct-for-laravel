@@ -91,10 +91,9 @@ class SnomedIndexCommand extends Command
 
     public function linkFsn()
     {
-
         SnomedIndex::with('computedFullySpecifiedName')->chunkById(1000, function (Collection $indexes) {
             $records = $indexes->map(function (SnomedIndex $index) {
-                $fsn = $index->fullySpecifiedName;
+                $fsn = $index->computedFullySpecifiedName;
 
                 if ($fsn != null) {
                     $index->fsn_id = $fsn->id;
