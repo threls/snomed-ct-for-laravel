@@ -41,17 +41,17 @@ class SnomedIndexCommand extends Command
     public function indexSnapDefinitions(): void
     {
         SnomedDescription::where('active', true)
-            ->whereHas('snomedSnapConcept', fn(Builder $query) => $query->where('active', true))
-            ->with(['snomedRefsetLanguage' => fn(HasMany $query) => $query->where('active', true)])
-            ->chunk(1000, fn($rows) => $this->index($rows));
+            ->whereHas('snomedSnapConcept', fn (Builder $query) => $query->where('active', true))
+            ->with(['snomedRefsetLanguage' => fn (HasMany $query) => $query->where('active', true)])
+            ->chunk(1000, fn ($rows) => $this->index($rows));
     }
 
     public function indexTextDefinitions(): void
     {
         SnomedTextDefinition::where('active', true)
-            ->whereHas('snomedSnapConcept', fn(Builder $query) => $query->where('active', true))
-            ->with(['snomedRefsetLanguage' => fn(HasMany $query) => $query->where('active', true)])
-            ->chunk(1000, fn($rows) => $this->index($rows));
+            ->whereHas('snomedSnapConcept', fn (Builder $query) => $query->where('active', true))
+            ->with(['snomedRefsetLanguage' => fn (HasMany $query) => $query->where('active', true)])
+            ->chunk(1000, fn ($rows) => $this->index($rows));
     }
 
     public function index(Collection $chunk): void
@@ -64,7 +64,7 @@ class SnomedIndexCommand extends Command
                 preg_match('/\([a-zA-Z\/\s]*\)$/', $row->term, $match);
                 if (count($match) != 0) {
                     $semanticTag = substr($match[0], 1, -1);
-                    $row->term = preg_replace('/ ' . preg_quote($match[0], '/') . '$/', '', $row->term);
+                    $row->term = preg_replace('/ '.preg_quote($match[0], '/').'$/', '', $row->term);
                 }
             }
 
@@ -91,10 +91,9 @@ class SnomedIndexCommand extends Command
 
     public function linkFsn()
     {
-
         SnomedIndex::with('computedFullySpecifiedName')->chunkById(1000, function (Collection $indexes) {
             $records = $indexes->map(function (SnomedIndex $index) {
-                $fsn = $index->fullySpecifiedName;
+                $fsn = $index->computedFullySpecifiedName;
 
                 if ($fsn != null) {
                     $index->fsn_id = $fsn->id;
@@ -103,7 +102,6 @@ class SnomedIndexCommand extends Command
 
                 return $index->only(['id', 'fsn_id', 'fsn_semantic_tag']);
             });
-
 
             ImportSnomedJob::dispatch('snomed_indices', $records->toArray(), ['id'], ['fsn_id', 'fsn_semantic_tag']);
         });
