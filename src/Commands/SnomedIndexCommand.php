@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Threls\SnomedCTForLaravel\Jobs\ImportSnomedJob;
 use Threls\SnomedCTForLaravel\Models\SnomedDescription;
@@ -74,19 +75,26 @@ class SnomedIndexCommand extends Command
                 $records
             ) {
                 $records->push([
-                    'id' => $row->id,
-                    'concept_id' => $row->conceptId,
-                    'type_id' => $row->typeId,
-                    'term' => $row->term,
-                    'refset_id' => $refsetLanguage->refsetId,
-                    'semantic_tag' => $semanticTag,
+                    'id'               => $row->id,
+                    'concept_id'       => $row->conceptId,
+                    'type_id'          => $row->typeId,
+                    'term'             => $row->term,
+                    'refset_id'        => $refsetLanguage->refsetId,
+                    'semantic_tag'     => $semanticTag,
                     'acceptability_id' => $refsetLanguage->acceptabilityId,
                 ]);
             });
         });
 
         ImportSnomedJob::dispatch('snomed_indices', $records->toArray(), ['id'],
-            ['concept_id', 'type_id', 'term', 'refset_id', 'acceptability_id', 'semantic_tag']);
+            [
+                'concept_id',
+                'type_id',
+                'term',
+                'refset_id',
+                'acceptability_id',
+                'semantic_tag'
+            ], self::getPersistedConnection());
     }
 
     public function linkFsn()
@@ -105,7 +113,20 @@ class SnomedIndexCommand extends Command
             });
 
 
-            ImportSnomedJob::dispatch('snomed_indices', $records->toArray(), ['id'], ['fsn_id', 'fsn_semantic_tag']);
+            ImportSnomedJob::dispatch('snomed_indices', $records->toArray(), ['id'], [
+                'fsn_id',
+                'fsn_semantic_tag'
+            ], self::getPersistedConnection());
         });
+    }
+
+    public static function getPersistedConnection()
+    {
+        return Config::get('snomed-ct-for-laravel.db.persisted.connection');
+    }
+
+    public static function getTempConnection()
+    {
+        return Config::get('snomed-ct-for-laravel.db.temp.connection');
     }
 }

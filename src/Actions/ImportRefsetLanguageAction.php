@@ -2,25 +2,25 @@
 
 namespace Threls\SnomedCTForLaravel\Actions;
 
-use Illuminate\Support\Facades\Config;
+use Carbon\Carbon;
 
 class ImportRefsetLanguageAction extends BaseImportAction
 {
-    protected static function getFile(): string
+    protected static function getFile(string $folder, string $fileSuffix): string
     {
-        return Config::get('snomed-ct-for-laravel.import.files.refsetLanguage');
+        return storage_path("app/snomed/{$folder}/Snapshot/Refset/Language/der2_cRefset_LanguageSnapshot-en_INT_${fileSuffix}.txt");
     }
 
     protected static function map(array $row): array
     {
         return [
-            'id' => $row[0],
-            'effectiveTime' => $row[1],
-            'active' => $row[2],
-            'moduleId' => $row[3],
-            'refsetId' => $row[4],
+            'id'                    => $row[0],
+            'effectiveTime'         => Carbon::createFromFormat('Ymd', $row[1]),
+            'active'                => $row[2],
+            'moduleId'              => $row[3],
+            'refsetId'              => $row[4],
             'referencedComponentId' => $row[5],
-            'acceptabilityId' => $row[6],
+            'acceptabilityId'       => $row[6],
 
         ];
     }

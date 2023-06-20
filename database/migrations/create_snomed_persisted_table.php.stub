@@ -9,13 +9,23 @@ return new class extends Migration {
     {
         Schema::create('snomed_indices', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('effective_time')->default('2000-01-31 00:00:00');
+            $table->date('effective_time');
             $table->unsignedBigInteger('concept_id');
             $table->unsignedBigInteger('type_id');
             $table->text('term');
             $table->string('semantic_tag')->nullable();
             $table->unsignedBigInteger('refset_id');
             $table->unsignedBigInteger('acceptability_id');
+            $table->unsignedBigInteger('fsn_id')->nullable();
+            $table->string('fsn_semantic_tag')->nullable();
+            $table->boolean('active');
+            $table->boolean('concept_active');
+            $table->boolean('refset_language_active');
+
+            $table->timestamps();
+
+            $table->index(['type_id']);
+            $table->index(['concept_id']);
         });
     }
 
