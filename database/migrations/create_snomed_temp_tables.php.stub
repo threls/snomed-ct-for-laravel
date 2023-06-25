@@ -21,10 +21,10 @@ return new class extends Migration {
     {
         Schema::create('snomed_description', function (Blueprint $table) {
             $table->id();
-            $table->date('effectiveTime');
+            $table->date('effectiveTime')->index();
             $table->boolean('active');
             $table->unsignedBigInteger('moduleId');
-            $table->unsignedBigInteger('conceptId');
+            $table->unsignedBigInteger('conceptId')->index();
             $table->string('languageCode', 3);
             $table->unsignedBigInteger('typeId');
             $table->text('term');
@@ -52,10 +52,10 @@ return new class extends Migration {
 
         Schema::create('snomed_text_definition', function (Blueprint $table) {
             $table->id();
-            $table->date('effectiveTime');
+            $table->date('effectiveTime')->index();
             $table->boolean('active');
             $table->unsignedBigInteger('moduleId');
-            $table->unsignedBigInteger('conceptId');
+            $table->unsignedBigInteger('conceptId')->index();
             $table->string('languageCode', 3);
             $table->unsignedBigInteger('typeId');
             $table->text('term');
@@ -67,6 +67,25 @@ return new class extends Migration {
             $table->string('key')->unique();
             $table->string('value');
             $table->timestamps();
+        });
+
+        Schema::create('snomed_indices', function (Blueprint $table) {
+            $table->id();
+            $table->date('effective_time');
+            $table->unsignedBigInteger('concept_id');
+            $table->unsignedBigInteger('type_id');
+            $table->text('term');
+            $table->string('semantic_tag')->nullable();
+            $table->unsignedBigInteger('refset_id')->nullable();
+            $table->unsignedBigInteger('acceptability_id')->nullable();
+            $table->unsignedBigInteger('fsn_id')->nullable();
+            $table->string('fsn_semantic_tag')->nullable();
+            $table->boolean('active');
+            $table->boolean('concept_active');
+            $table->boolean('refset_language_active');
+
+            $table->index(['type_id']);
+            $table->index(['concept_id']);
         });
     }
 
@@ -82,5 +101,6 @@ return new class extends Migration {
         Schema::dropIfExists('snomed_snap_concept');
         Schema::dropIfExists('snomed_text_definition');
         Schema::dropIfExists('snomed_meta');
+        Schema::dropIfExists('snomed_indices');
     }
 };

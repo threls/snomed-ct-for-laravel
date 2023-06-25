@@ -15,7 +15,7 @@ return [
             'connection' => env('SNOMED_TEMP_CONNECTION', 'sqlite')
         ],
         'persisted' => [
-            'connection' => env('SNOMED_TEMP_CONNECTION', 'mysql')
+            'connection' => env('SNOMED_PERSISTED_CONNECTION', 'mysql')
         ]
     ]
 ];

@@ -14,18 +14,13 @@ return new class extends Migration {
             $table->unsignedBigInteger('type_id');
             $table->text('term');
             $table->string('semantic_tag')->nullable();
-            $table->unsignedBigInteger('refset_id');
-            $table->unsignedBigInteger('acceptability_id');
+            $table->unsignedBigInteger('refset_id')->nullable();
+            $table->unsignedBigInteger('acceptability_id')->nullable();
             $table->unsignedBigInteger('fsn_id')->nullable();
             $table->string('fsn_semantic_tag')->nullable();
             $table->boolean('active');
             $table->boolean('concept_active');
             $table->boolean('refset_language_active');
-
-            $table->timestamps();
-
-            $table->index(['type_id']);
-            $table->index(['concept_id']);
         });
     }
 
