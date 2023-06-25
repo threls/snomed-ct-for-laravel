@@ -18,6 +18,7 @@ class ImportCommand extends Command
     protected $description = 'Import snomed data to database';
 
     protected string $selectedZipFile;
+
     protected Carbon $updatedTimestamp;
 
     public function handle()
@@ -28,17 +29,17 @@ class ImportCommand extends Command
 
         $prevReleaseEffectiveTime = app(SnomedMetaActions::class)->getReleaseEffectiveTime();
 
-        if (!is_null($prevReleaseEffectiveTime) && $prevReleaseEffectiveTime->greaterThanOrEqualTo($this->updatedTimestamp->copy()->startOfDay())) {
+        if (! is_null($prevReleaseEffectiveTime) && $prevReleaseEffectiveTime->greaterThanOrEqualTo($this->updatedTimestamp->copy()->startOfDay())) {
             $this->error('You are using an older version. No updates will be effected.');
+
             return;
         }
 
         $this->info("Latest Release Effective Time: {$prevReleaseEffectiveTime?->toDateString()}");
         $this->info("New Release Effective Time: {$this->updatedTimestamp->toDateString()}");
 
-
         $confirmation = $this->confirm('Confirm', true);
-        if (!$confirmation) {
+        if (! $confirmation) {
             return;
         }
 
@@ -65,6 +66,7 @@ class ImportCommand extends Command
     {
         $re = '/(?<=_)\w{16}(?=\.zip$)/';
         preg_match($re, $this->selectedZipFile, $matches, PREG_OFFSET_CAPTURE, 0);
+
         return Carbon::parse($matches[0][0]);
     }
 

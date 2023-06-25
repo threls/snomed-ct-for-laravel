@@ -10,12 +10,12 @@ return [
     'models' => [
         'index' => SnomedIndex::class,
     ],
-    'db'     => [
+    'db' => [
         'temp' => [
-            'connection' => env('SNOMED_TEMP_CONNECTION', 'sqlite')
+            'connection' => env('SNOMED_TEMP_CONNECTION', 'sqlite'),
         ],
         'persisted' => [
-            'connection' => env('SNOMED_PERSISTED_CONNECTION', 'mysql')
-        ]
-    ]
+            'connection' => env('SNOMED_PERSISTED_CONNECTION', 'mysql'),
+        ],
+    ],
 ];

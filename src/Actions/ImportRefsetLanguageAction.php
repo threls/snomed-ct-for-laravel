@@ -14,13 +14,13 @@ class ImportRefsetLanguageAction extends BaseImportAction
     protected static function map(array $row): array
     {
         return [
-            'id'                    => $row[0],
-            'effectiveTime'         => Carbon::createFromFormat('Ymd', $row[1]),
-            'active'                => $row[2],
-            'moduleId'              => $row[3],
-            'refsetId'              => $row[4],
+            'id' => $row[0],
+            'effectiveTime' => Carbon::createFromFormat('Ymd', $row[1]),
+            'active' => $row[2],
+            'moduleId' => $row[3],
+            'refsetId' => $row[4],
             'referencedComponentId' => $row[5],
-            'acceptabilityId'       => $row[6],
+            'acceptabilityId' => $row[6],
 
         ];
     }

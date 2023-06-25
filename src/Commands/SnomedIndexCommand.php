@@ -1,6 +1,7 @@
 <?php
 
 namespace Threls\SnomedCTForLaravel\Commands;
+
 ini_set('memory_limit', -1);
 
 use Carbon\Carbon;
@@ -51,9 +52,8 @@ class SnomedIndexCommand extends Command
 
     protected function getChunk(): int
     {
-        return (int)$this->option('chunk');
+        return (int) $this->option('chunk');
     }
-
 
     protected function indexTable(string $tableName, ?Carbon $since): void
     {
@@ -67,16 +67,16 @@ class SnomedIndexCommand extends Command
                 'snomed_refset_language.refsetId',
                 'snomed_refset_language.acceptabilityId',
                 'snomed_refset_language.active as snomed_refset_language_active',
-                'snomed_snap_concept.active as snomed_snap_concept_active'
+                'snomed_snap_concept.active as snomed_snap_concept_active',
             ]);
 
-        if (!is_null($since)) {
+        if (! is_null($since)) {
             $builder->where("{$tableName}.effectiveTime", '>', $since->endOfDay());
         }
 
         $bar = $this->output->createProgressBar($builder->count());
 
-        $builder->chunk($this->getChunk(), fn($rows) => $this->index($rows, $bar));
+        $builder->chunk($this->getChunk(), fn ($rows) => $this->index($rows, $bar));
 
         $bar->finish();
 
@@ -93,21 +93,21 @@ class SnomedIndexCommand extends Command
                 preg_match('/\([a-zA-Z\/\s]*\)$/', $row->term, $match);
                 if (count($match) != 0) {
                     $semanticTag = substr($match[0], 1, -1);
-                    $row->term = preg_replace('/ ' . preg_quote($match[0], '/') . '$/', '', $row->term);
+                    $row->term = preg_replace('/ '.preg_quote($match[0], '/').'$/', '', $row->term);
                 }
             }
 
             $records->push([
-                'id'                     => $row->id,
-                'effective_time'         => Carbon::parse($row->effectiveTime)->startOfDay(),
-                'concept_id'             => $row->conceptId,
-                'type_id'                => $row->typeId,
-                'term'                   => $row->term,
-                'refset_id'              => $row->refsetId,
-                'semantic_tag'           => $semanticTag,
-                'acceptability_id'       => $row->acceptabilityId,
-                'active'                 => $row->active,
-                'concept_active'         => $row->snomed_snap_concept_active ?? false,
+                'id' => $row->id,
+                'effective_time' => Carbon::parse($row->effectiveTime)->startOfDay(),
+                'concept_id' => $row->conceptId,
+                'type_id' => $row->typeId,
+                'term' => $row->term,
+                'refset_id' => $row->refsetId,
+                'semantic_tag' => $semanticTag,
+                'acceptability_id' => $row->acceptabilityId,
+                'active' => $row->active,
+                'concept_active' => $row->snomed_snap_concept_active ?? false,
                 'refset_language_active' => $row->snomed_refset_language_active ?? false,
             ]);
         });
@@ -119,7 +119,7 @@ class SnomedIndexCommand extends Command
             'term',
             'refset_id',
             'semantic_tag',
-            'acceptability_id'
+            'acceptability_id',
         ]);
 
         $progressBar->advance($chunk->count());
@@ -127,7 +127,7 @@ class SnomedIndexCommand extends Command
 
     public function linkFsn()
     {
-        $sql = <<<SQL
+        $sql = <<<'SQL'
 update snomed_indices
 set fsn_id           = (select s2.id
                         from snomed_indices s1
