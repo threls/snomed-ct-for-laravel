@@ -14,11 +14,11 @@ class StatusCommand extends Command
 
     public function handle()
     {
-        $this->info("Versions: ");
+        $this->info('Versions: ');
 
         $this->table(['Connection', 'Latest Effective Time'], [
             ['SQLite', $this->getLastUpdate('sqlite')],
-            ['MySQL', $this->getLastUpdate('mysql')]
+            ['MySQL', $this->getLastUpdate('mysql')],
         ]);
     }
 
@@ -28,5 +28,4 @@ class StatusCommand extends Command
 
         return is_null($date) ? null : Carbon::parse($date->effective_time)->toDateString();
     }
-
 }
