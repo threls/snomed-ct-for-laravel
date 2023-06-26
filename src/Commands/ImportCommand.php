@@ -35,7 +35,7 @@ class ImportCommand extends Command
             return;
         }
 
-        $this->info("Latest Release Effective Time: {$prevReleaseEffectiveTime?->toDateString()}");
+        $this->info("Previous Release Effective Time: {$prevReleaseEffectiveTime?->toDateString()}");
         $this->info("New Release Effective Time: {$this->updatedTimestamp->toDateString()}");
 
         $confirmation = $this->confirm('Confirm', true);

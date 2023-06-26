@@ -7,6 +7,7 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Threls\SnomedCTForLaravel\Commands\ImportCommand;
 use Threls\SnomedCTForLaravel\Commands\PersistCommand;
 use Threls\SnomedCTForLaravel\Commands\SnomedIndexCommand;
+use Threls\SnomedCTForLaravel\Commands\StatusCommand;
 
 class SnomedCTForLaravelServiceProvider extends PackageServiceProvider
 {
@@ -27,6 +28,7 @@ class SnomedCTForLaravelServiceProvider extends PackageServiceProvider
                 ImportCommand::class,
                 SnomedIndexCommand::class,
                 PersistCommand::class,
+                StatusCommand::class,
             ])->hasConfigFile();
     }
 }
