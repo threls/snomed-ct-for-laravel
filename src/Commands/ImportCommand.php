@@ -4,12 +4,13 @@ namespace Threls\SnomedCTForLaravel\Commands;
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 use Threls\SnomedCTForLaravel\Actions\ImportConceptAction;
 use Threls\SnomedCTForLaravel\Actions\ImportDescriptionAction;
 use Threls\SnomedCTForLaravel\Actions\ImportRefsetLanguageAction;
 use Threls\SnomedCTForLaravel\Actions\ImportTextDefinitionAction;
 use Threls\SnomedCTForLaravel\Actions\SnomedMetaActions;
+use ZipArchive;
 
 class ImportCommand extends Command
 {
@@ -29,7 +30,7 @@ class ImportCommand extends Command
 
         $prevReleaseEffectiveTime = app(SnomedMetaActions::class)->getReleaseEffectiveTime();
 
-        if (! is_null($prevReleaseEffectiveTime) && $prevReleaseEffectiveTime->greaterThanOrEqualTo($this->updatedTimestamp->copy()->startOfDay())) {
+        if (!is_null($prevReleaseEffectiveTime) && $prevReleaseEffectiveTime->greaterThanOrEqualTo($this->updatedTimestamp->copy()->startOfDay())) {
             $this->error('You are using an older version. No updates will be effected.');
 
             return;
@@ -39,7 +40,7 @@ class ImportCommand extends Command
         $this->info("New Release Effective Time: {$this->updatedTimestamp->toDateString()}");
 
         $confirmation = $this->confirm('Confirm', true);
-        if (! $confirmation) {
+        if (!$confirmation) {
             return;
         }
 
@@ -75,13 +76,14 @@ class ImportCommand extends Command
         $zipPath = storage_path("app/{$this->selectedZipFile}");
         $extractPath = storage_path('app/snomed');
 
-        $zipArchive = new \ZipArchive;
+        $zipArchive = new ZipArchive;
         $res = $zipArchive->open($zipPath);
 
-        if ($res === true) {
-            $zipArchive->extractTo($extractPath);
-        } else {
+        if ($res === false) {
             $this->error('Extract cannot be completed');
+            return;
         }
+
+        $zipArchive->extractTo($extractPath);
     }
 }
