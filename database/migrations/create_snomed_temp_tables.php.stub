@@ -1,0 +1,106 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+
+return new class extends Migration {
+
+    public function __construct()
+    {
+        $this->connection = Config::get('snomed-ct-for-laravel.db.temp.connection');
+    }
+
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('snomed_description', function (Blueprint $table) {
+            $table->id();
+            $table->date('effectiveTime')->index();
+            $table->boolean('active');
+            $table->unsignedBigInteger('moduleId');
+            $table->unsignedBigInteger('conceptId')->index();
+            $table->string('languageCode', 3);
+            $table->unsignedBigInteger('typeId');
+            $table->text('term');
+            $table->unsignedBigInteger('caseSignificanceId');
+        });
+
+        Schema::create('snomed_refset_language', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->date('effectiveTime');
+            $table->boolean('active');
+            $table->unsignedBigInteger('moduleId');
+
+            $table->unsignedBigInteger('refsetId');
+            $table->unsignedBigInteger('referencedComponentId')->index();
+            $table->unsignedBigInteger('acceptabilityId');
+        });
+
+        Schema::create('snomed_snap_concept', function (Blueprint $table) {
+            $table->bigInteger('id')->primary();
+            $table->date('effectiveTime');
+            $table->boolean('active');
+            $table->bigInteger('moduleId');
+            $table->bigInteger('definitionStatusId');
+        });
+
+        Schema::create('snomed_text_definition', function (Blueprint $table) {
+            $table->id();
+            $table->date('effectiveTime')->index();
+            $table->boolean('active');
+            $table->unsignedBigInteger('moduleId');
+            $table->unsignedBigInteger('conceptId')->index();
+            $table->string('languageCode', 3);
+            $table->unsignedBigInteger('typeId');
+            $table->text('term');
+            $table->unsignedBigInteger('caseSignificanceId');
+        });
+
+        Schema::create('snomed_meta', function (Blueprint $table) {
+            $table->id();
+            $table->string('key')->unique();
+            $table->string('value');
+            $table->timestamps();
+        });
+
+        Schema::create('snomed_indices', function (Blueprint $table) {
+            $table->id();
+            $table->date('effective_time');
+            $table->unsignedBigInteger('concept_id');
+            $table->unsignedBigInteger('type_id');
+            $table->text('term');
+            $table->string('semantic_tag')->nullable();
+            $table->unsignedBigInteger('refset_id')->nullable();
+            $table->unsignedBigInteger('acceptability_id')->nullable();
+            $table->unsignedBigInteger('fsn_id')->nullable();
+            $table->string('fsn_semantic_tag')->nullable();
+            $table->boolean('active');
+            $table->boolean('concept_active');
+            $table->boolean('refset_language_active');
+
+            $table->index(['type_id']);
+            $table->index(['concept_id']);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('snomed_description');
+        Schema::dropIfExists('snomed_refset_language');
+        Schema::dropIfExists('snomed_snap_concept');
+        Schema::dropIfExists('snomed_text_definition');
+        Schema::dropIfExists('snomed_meta');
+        Schema::dropIfExists('snomed_indices');
+    }
+};

@@ -2,25 +2,25 @@
 
 namespace Threls\SnomedCTForLaravel\Actions;
 
-use Illuminate\Support\Facades\Config;
+use Carbon\Carbon;
 
 class ImportTextDefinitionAction extends BaseImportAction
 {
     protected static function upsertTable(): string
     {
-        return 'snomed_textDefinition';
+        return 'snomed_text_definition';
     }
 
-    protected static function getFile(): string
+    protected static function getFile(string $folder, string $fileSuffix): string
     {
-        return Config::get('snomed-ct-for-laravel.import.files.textDefinition');
+        return storage_path("app/snomed/{$folder}/Snapshot/Terminology/sct2_TextDefinition_Snapshot-en_INT_${fileSuffix}.txt");
     }
 
     protected static function map(array $row): array
     {
         return [
             'id' => $row[0],
-            'effectiveTime' => $row[1],
+            'effectiveTime' => Carbon::createFromFormat('Ymd', $row[1]),
             'active' => $row[2],
             'moduleId' => $row[3],
             'conceptId' => $row[4],

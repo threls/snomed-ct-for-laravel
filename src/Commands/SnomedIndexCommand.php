@@ -2,65 +2,94 @@
 
 namespace Threls\SnomedCTForLaravel\Commands;
 
+ini_set('memory_limit', -1);
+
+use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Threls\SnomedCTForLaravel\Jobs\ImportSnomedJob;
-use Threls\SnomedCTForLaravel\Models\SnomedDescription;
-use Threls\SnomedCTForLaravel\Models\SnomedIndex;
-use Threls\SnomedCTForLaravel\Models\SnomedRefsetLanguage;
-use Threls\SnomedCTForLaravel\Models\SnomedTextDefinition;
+use Symfony\Component\Console\Helper\ProgressBar;
+use Threls\SnomedCTForLaravel\Enums\DescriptionType;
 
 class SnomedIndexCommand extends Command
 {
-    protected $signature = 'snomed:index';
+    protected $signature = 'snomed:index {--chunk=10000}';
 
     protected $description = 'Build the snomed indices table';
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
+    protected string $connection;
 
     public function handle()
     {
-        DB::connection()->disableQueryLog();
+        $this->connection = Config::get('snomed-ct-for-laravel.db.temp.connection');
+
+        DB::connection($this->connection)->disableQueryLog();
+
+        $lastUpdate = $this->getLastUpdate();
+        $this->info("Last Update: {$lastUpdate?->toDateString()}");
 
         $this->info('Indexing Snap Definitions');
-        $this->indexSnapDefinitions();
+        $this->indexTable(tableName: 'snomed_description', since: $lastUpdate);
 
         $this->info('Indexing Text Definitions');
-        $this->indexTextDefinitions();
+        $this->indexTable(tableName: 'snomed_text_definition', since: $lastUpdate);
 
         $this->info('Linking FSN');
         $this->linkFsn();
     }
 
-    public function indexSnapDefinitions(): void
+    protected function getLastUpdate(): ?Carbon
     {
-        SnomedDescription::where('active', true)
-            ->whereHas('snomedSnapConcept', fn (Builder $query) => $query->where('active', true))
-            ->with(['snomedRefsetLanguage' => fn (HasMany $query) => $query->where('active', true)])
-            ->chunk(1000, fn ($rows) => $this->index($rows));
+        $first = DB::connection($this->connection)->table('snomed_indices')->orderBy('effective_time', 'desc')->first();
+
+        if ($first) {
+            return Carbon::parse($first->effective_time);
+        } else {
+            return null;
+        }
     }
 
-    public function indexTextDefinitions(): void
+    protected function getChunk(): int
     {
-        SnomedTextDefinition::where('active', true)
-            ->whereHas('snomedSnapConcept', fn (Builder $query) => $query->where('active', true))
-            ->with(['snomedRefsetLanguage' => fn (HasMany $query) => $query->where('active', true)])
-            ->chunk(1000, fn ($rows) => $this->index($rows));
+        return (int) $this->option('chunk');
     }
 
-    public function index(Collection $chunk): void
+    protected function indexTable(string $tableName, ?Carbon $since): void
+    {
+        $builder = DB::connection($this->connection)
+            ->table($tableName)
+            ->leftJoin('snomed_snap_concept', "{$tableName}.conceptId", '=', 'snomed_snap_concept.id')
+            ->leftJoin('snomed_refset_language', 'snomed_refset_language.referencedComponentId', '=', "{$tableName}.id")
+            ->orderBy("{$tableName}.effectiveTime")
+            ->select([
+                "{$tableName}.*",
+                'snomed_refset_language.refsetId',
+                'snomed_refset_language.acceptabilityId',
+                'snomed_refset_language.active as snomed_refset_language_active',
+                'snomed_snap_concept.active as snomed_snap_concept_active',
+            ]);
+
+        if (! is_null($since)) {
+            $builder->where("{$tableName}.effectiveTime", '>', $since->endOfDay());
+        }
+
+        $bar = $this->output->createProgressBar($builder->count());
+
+        $builder->chunk($this->getChunk(), fn ($rows) => $this->index($rows, $bar));
+
+        $bar->finish();
+
+        $this->output->newLine(2);
+    }
+
+    public function index(Collection $chunk, ProgressBar &$progressBar): void
     {
         $records = collect([]);
 
-        $chunk->each(function (SnomedDescription|SnomedTextDefinition $row) use ($records) {
+        $chunk->each(function ($row) use ($records) {
             $semanticTag = null;
-            if ($row->typeId == 900000000000003001) {
+            if ($row->typeId == DescriptionType::FULLY_SPECIFIED_NAME->value) {
                 preg_match('/\([a-zA-Z\/\s]*\)$/', $row->term, $match);
                 if (count($match) != 0) {
                     $semanticTag = substr($match[0], 1, -1);
@@ -68,42 +97,48 @@ class SnomedIndexCommand extends Command
                 }
             }
 
-            $row->snomedRefsetLanguage->each(function (SnomedRefsetLanguage $refsetLanguage) use (
-                $row,
-                $semanticTag,
-                $records
-            ) {
-                $records->push([
-                    'id' => $row->id,
-                    'concept_id' => $row->conceptId,
-                    'type_id' => $row->typeId,
-                    'term' => $row->term,
-                    'refset_id' => $refsetLanguage->refsetId,
-                    'semantic_tag' => $semanticTag,
-                    'acceptability_id' => $refsetLanguage->acceptabilityId,
-                ]);
-            });
+            $records->push([
+                'id' => $row->id,
+                'effective_time' => Carbon::parse($row->effectiveTime)->startOfDay(),
+                'concept_id' => $row->conceptId,
+                'type_id' => $row->typeId,
+                'term' => $row->term,
+                'refset_id' => $row->refsetId,
+                'semantic_tag' => $semanticTag,
+                'acceptability_id' => $row->acceptabilityId,
+                'active' => $row->active,
+                'concept_active' => $row->snomed_snap_concept_active ?? false,
+                'refset_language_active' => $row->snomed_refset_language_active ?? false,
+            ]);
         });
 
-        ImportSnomedJob::dispatch('snomed_indices', $records->toArray(), ['id'],
-            ['concept_id', 'type_id', 'term', 'refset_id', 'acceptability_id', 'semantic_tag']);
+        DB::connection($this->connection)->table('snomed_indices')->upsert($records->toArray(), ['id'], [
+            'effective_time',
+            'concept_id',
+            'type_id',
+            'term',
+            'refset_id',
+            'semantic_tag',
+            'acceptability_id',
+        ]);
+
+        $progressBar->advance($chunk->count());
     }
 
     public function linkFsn()
     {
-        SnomedIndex::with('computedFullySpecifiedName')->chunkById(1000, function (Collection $indexes) {
-            $records = $indexes->map(function (SnomedIndex $index) {
-                $fsn = $index->computedFullySpecifiedName;
+        $sql = <<<'SQL'
+update snomed_indices
+set fsn_id           = (select s2.id
+                        from snomed_indices s1
+                                 inner join snomed_indices s2 on s1.concept_id = s2.concept_id
+                            and s2.type_id = 900000000000003001),
+    fsn_semantic_tag = (select s2.semantic_tag
+                        from snomed_indices s1
+                                 inner join snomed_indices s2 on s1.concept_id = s2.concept_id
+                            and s2.type_id = 900000000000003001);
+SQL;
 
-                if ($fsn != null) {
-                    $index->fsn_id = $fsn->id;
-                    $index->fsn_semantic_tag = $fsn->semantic_tag;
-                }
-
-                return $index->only(['id', 'fsn_id', 'fsn_semantic_tag']);
-            });
-
-            ImportSnomedJob::dispatch('snomed_indices', $records->toArray(), ['id'], ['fsn_id', 'fsn_semantic_tag']);
-        });
+        DB::connection($this->connection)->statement($sql);
     }
 }

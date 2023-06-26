@@ -2,7 +2,7 @@
 
 namespace Threls\SnomedCTForLaravel\Actions;
 
-use Illuminate\Support\Facades\Config;
+use Carbon\Carbon;
 
 class ImportConceptAction extends BaseImportAction
 {
@@ -11,16 +11,16 @@ class ImportConceptAction extends BaseImportAction
         return 'snomed_snap_concept';
     }
 
-    protected static function getFile(): string
+    protected static function getFile(string $folder, string $fileSuffix): string
     {
-        return Config::get('snomed-ct-for-laravel.import.files.concept');
+        return storage_path("app/snomed/{$folder}/Snapshot/Terminology/sct2_Concept_Snapshot_INT_{$fileSuffix}.txt");
     }
 
     protected static function map(array $row): array
     {
         return [
             'id' => $row[0],
-            'effectiveTime' => $row[1],
+            'effectiveTime' => Carbon::createFromFormat('Ymd', $row[1]),
             'active' => $row[2],
             'moduleId' => $row[3],
             'definitionStatusId' => $row[4],
