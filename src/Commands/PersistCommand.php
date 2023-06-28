@@ -42,34 +42,33 @@ class PersistCommand extends Command
 
         $query = $this->tempDB->table($this->table);
 
-        if (!is_null($persistedEffectiveTime)) {
+        if (! is_null($persistedEffectiveTime)) {
             $query->where('effective_time', '>', $persistedEffectiveTime);
         }
 
         $bar = $this->output->createProgressBar($query->count());
 
-        $query->chunkById($chunk, fn($rows) => $this->persist($rows, $bar, $doIndex));
+        $query->chunkById($chunk, fn ($rows) => $this->persist($rows, $bar, $doIndex));
         $bar->finish();
     }
 
     public function persist(Collection $chunk, ProgressBar &$progressBar, bool $doIndex): void
     {
-        $array = $chunk->map(fn($row) => [
-            'id'                     => $row->id,
-            'effective_time'         => $row->effective_time,
-            'concept_id'             => $row->concept_id,
-            'type_id'                => $row->type_id,
-            'term'                   => $row->term,
-            'semantic_tag'           => $row->semantic_tag,
-            'refset_id'              => $row->refset_id,
-            'acceptability_id'       => $row->acceptability_id,
-            'fsn_id'                 => $row->fsn_id,
-            'fsn_semantic_tag'       => $row->fsn_semantic_tag,
-            'active'                 => $row->active,
-            'concept_active'         => $row->concept_active,
+        $array = $chunk->map(fn ($row) => [
+            'id' => $row->id,
+            'effective_time' => $row->effective_time,
+            'concept_id' => $row->concept_id,
+            'type_id' => $row->type_id,
+            'term' => $row->term,
+            'semantic_tag' => $row->semantic_tag,
+            'refset_id' => $row->refset_id,
+            'acceptability_id' => $row->acceptability_id,
+            'fsn_id' => $row->fsn_id,
+            'fsn_semantic_tag' => $row->fsn_semantic_tag,
+            'active' => $row->active,
+            'concept_active' => $row->concept_active,
             'refset_language_active' => $row->refset_language_active,
         ]);
-
 
         if ($doIndex) {
             $this->saveAndIndex($array, $progressBar);
@@ -87,17 +86,17 @@ class PersistCommand extends Command
             $snomedIndex->updateOrCreate(
                 ['id' => $record['id']],
                 [
-                    'effective_time'         => $record['effective_time'],
-                    'concept_id'             => $record['concept_id'],
-                    'type_id'                => $record['type_id'],
-                    'term'                   => $record['term'],
-                    'semantic_tag'           => $record['semantic_tag'],
-                    'refset_id'              => $record['refset_id'],
-                    'acceptability_id'       => $record['acceptability_id'],
-                    'fsn_id'                 => $record['fsn_id'],
-                    'fsn_semantic_tag'       => $record['fsn_semantic_tag'],
-                    'active'                 => $record['active'],
-                    'concept_active'         => $record['concept_active'],
+                    'effective_time' => $record['effective_time'],
+                    'concept_id' => $record['concept_id'],
+                    'type_id' => $record['type_id'],
+                    'term' => $record['term'],
+                    'semantic_tag' => $record['semantic_tag'],
+                    'refset_id' => $record['refset_id'],
+                    'acceptability_id' => $record['acceptability_id'],
+                    'fsn_id' => $record['fsn_id'],
+                    'fsn_semantic_tag' => $record['fsn_semantic_tag'],
+                    'active' => $record['active'],
+                    'concept_active' => $record['concept_active'],
                     'refset_language_active' => $record['refset_language_active'],
                 ]
             );
