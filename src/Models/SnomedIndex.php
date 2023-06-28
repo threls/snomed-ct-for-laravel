@@ -39,5 +39,4 @@ class SnomedIndex extends Model
     {
         return $this->belongsTo(Config::get('snomed-ct-for-laravel.models.index'), 'fsn_id', 'id');
     }
-
 }

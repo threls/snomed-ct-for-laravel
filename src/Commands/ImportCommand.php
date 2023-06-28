@@ -30,7 +30,7 @@ class ImportCommand extends Command
 
         $prevReleaseEffectiveTime = app(SnomedMetaActions::class)->getReleaseEffectiveTime();
 
-        if (!is_null($prevReleaseEffectiveTime) && $prevReleaseEffectiveTime->greaterThanOrEqualTo($this->updatedTimestamp->copy()->startOfDay())) {
+        if (! is_null($prevReleaseEffectiveTime) && $prevReleaseEffectiveTime->greaterThanOrEqualTo($this->updatedTimestamp->copy()->startOfDay())) {
             $this->error('You are using an older version. No updates will be effected.');
 
             return;
@@ -40,7 +40,7 @@ class ImportCommand extends Command
         $this->info("New Release Effective Time: {$this->updatedTimestamp->toDateString()}");
 
         $confirmation = $this->confirm('Confirm', true);
-        if (!$confirmation) {
+        if (! $confirmation) {
             return;
         }
 
@@ -81,6 +81,7 @@ class ImportCommand extends Command
 
         if ($res === false) {
             $this->error('Extract cannot be completed');
+
             return;
         }
 

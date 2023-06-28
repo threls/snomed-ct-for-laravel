@@ -11,8 +11,6 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Threls\SnomedCTForLaravel\Enums\DescriptionType;
-use Threls\SnomedCTForLaravel\Jobs\ImportSnomedJob;
-use Threls\SnomedCTForLaravel\Models\SnomedIndex;
 
 class SnomedIndexCommand extends Command
 {
@@ -54,7 +52,7 @@ class SnomedIndexCommand extends Command
 
     protected function getChunk(): int
     {
-        return (int)$this->option('chunk');
+        return (int) $this->option('chunk');
     }
 
     protected function indexTable(string $tableName, ?Carbon $since): void
@@ -72,13 +70,13 @@ class SnomedIndexCommand extends Command
                 'snomed_snap_concept.active as snomed_snap_concept_active',
             ]);
 
-        if (!is_null($since)) {
+        if (! is_null($since)) {
             $builder->where("{$tableName}.effectiveTime", '>', $since->endOfDay());
         }
 
         $bar = $this->output->createProgressBar($builder->count());
 
-        $builder->chunk($this->getChunk(), fn($rows) => $this->index($rows, $bar));
+        $builder->chunk($this->getChunk(), fn ($rows) => $this->index($rows, $bar));
 
         $bar->finish();
 
@@ -95,21 +93,21 @@ class SnomedIndexCommand extends Command
                 preg_match('/\([a-zA-Z\/\s]*\)$/', $row->term, $match);
                 if (count($match) != 0) {
                     $semanticTag = substr($match[0], 1, -1);
-                    $row->term = preg_replace('/ ' . preg_quote($match[0], '/') . '$/', '', $row->term);
+                    $row->term = preg_replace('/ '.preg_quote($match[0], '/').'$/', '', $row->term);
                 }
             }
 
             $records->push([
-                'id'                     => $row->id,
-                'effective_time'         => Carbon::parse($row->effectiveTime)->startOfDay(),
-                'concept_id'             => $row->conceptId,
-                'type_id'                => $row->typeId,
-                'term'                   => $row->term,
-                'refset_id'              => $row->refsetId,
-                'semantic_tag'           => $semanticTag,
-                'acceptability_id'       => $row->acceptabilityId,
-                'active'                 => $row->active,
-                'concept_active'         => $row->snomed_snap_concept_active ?? false,
+                'id' => $row->id,
+                'effective_time' => Carbon::parse($row->effectiveTime)->startOfDay(),
+                'concept_id' => $row->conceptId,
+                'type_id' => $row->typeId,
+                'term' => $row->term,
+                'refset_id' => $row->refsetId,
+                'semantic_tag' => $semanticTag,
+                'acceptability_id' => $row->acceptabilityId,
+                'active' => $row->active,
+                'concept_active' => $row->snomed_snap_concept_active ?? false,
                 'refset_language_active' => $row->snomed_refset_language_active ?? false,
             ]);
         });
@@ -149,27 +147,26 @@ class SnomedIndexCommand extends Command
             's2.semantic_tag as fsn_semantic_tag'
         )->orderBy('s1.effective_time');
 
-
-        if (!is_null($since)) {
-            $query->where("s1.effective_time", '>', $since->endOfDay());
+        if (! is_null($since)) {
+            $query->where('s1.effective_time', '>', $since->endOfDay());
         }
 
         $query->chunk($this->getChunk(), function (Collection $chunk) {
             $chunk = $chunk->map(
-                fn($row) => [
-                    'id'                     => $row->id,
-                    'effective_time'         => $row->effective_time,
-                    'concept_id'             => $row->concept_id,
-                    'type_id'                => $row->type_id,
-                    'term'                   => $row->term,
-                    'semantic_tag'           => $row->semantic_tag,
-                    'refset_id'              => $row->refset_id,
-                    'acceptability_id'       => $row->acceptability_id,
-                    'active'                 => $row->active,
-                    'concept_active'         => $row->concept_active,
+                fn ($row) => [
+                    'id' => $row->id,
+                    'effective_time' => $row->effective_time,
+                    'concept_id' => $row->concept_id,
+                    'type_id' => $row->type_id,
+                    'term' => $row->term,
+                    'semantic_tag' => $row->semantic_tag,
+                    'refset_id' => $row->refset_id,
+                    'acceptability_id' => $row->acceptability_id,
+                    'active' => $row->active,
+                    'concept_active' => $row->concept_active,
                     'refset_language_active' => $row->refset_language_active,
-                    'fsn_id'                 => $row->fsn_id,
-                    'fsn_semantic_tag'       => $row->fsn_semantic_tag
+                    'fsn_id' => $row->fsn_id,
+                    'fsn_semantic_tag' => $row->fsn_semantic_tag,
                 ]
             );
 
