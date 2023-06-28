@@ -71,21 +71,21 @@ return new class extends Migration {
 
         Schema::create('snomed_indices', function (Blueprint $table) {
             $table->id();
-            $table->date('effective_time');
-            $table->unsignedBigInteger('concept_id');
-            $table->unsignedBigInteger('type_id');
+            $table->date('effective_time')->index();
+            $table->unsignedBigInteger('concept_id')->index();
+            $table->unsignedBigInteger('type_id')->index();
             $table->text('term');
-            $table->string('semantic_tag')->nullable();
+            $table->string('semantic_tag')
+                ->nullable();
             $table->unsignedBigInteger('refset_id')->nullable();
             $table->unsignedBigInteger('acceptability_id')->nullable();
-            $table->unsignedBigInteger('fsn_id')->nullable();
-            $table->string('fsn_semantic_tag')->nullable();
+            $table->unsignedBigInteger('fsn_id')
+                ->nullable();
+            $table->string('fsn_semantic_tag')
+                ->nullable();
             $table->boolean('active');
             $table->boolean('concept_active');
             $table->boolean('refset_language_active');
-
-            $table->index(['type_id']);
-            $table->index(['concept_id']);
         });
     }
 
