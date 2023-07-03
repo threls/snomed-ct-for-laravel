@@ -4,6 +4,7 @@ namespace Threls\SnomedCTForLaravel\Commands;
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 
 class StatusCommand extends Command
@@ -17,8 +18,8 @@ class StatusCommand extends Command
         $this->info('Versions: ');
 
         $this->table(['Connection', 'Latest Effective Time'], [
-            ['SQLite', $this->getLastUpdate('sqlite')],
-            ['MySQL', $this->getLastUpdate('mysql')],
+            ['Temp', $this->getLastUpdate(Config::get('snomed-ct-for-laravel.db.temp.connection'))],
+            ['Persisted', $this->getLastUpdate(Config::get('snomed-ct-for-laravel.db.persisted.connection'))],
         ]);
     }
 
