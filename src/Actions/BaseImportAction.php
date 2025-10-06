@@ -40,7 +40,7 @@ abstract class BaseImportAction
         return static::getFile($folder, $suffix);
     }
 
-    final public function execute(Carbon $zipUpdateTimestamp, ?Carbon $since, ?int $chunk): void
+    final public function execute(Carbon $zipUpdateTimestamp, ?Carbon $since, ?int $chunk = 1000): void
     {
         LazyCollection::make(function () use ($zipUpdateTimestamp) {
             $handle = fopen($this->getFilePath($zipUpdateTimestamp), 'r');
