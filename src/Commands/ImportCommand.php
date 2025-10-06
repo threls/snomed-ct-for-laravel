@@ -14,7 +14,7 @@ use ZipArchive;
 
 class ImportCommand extends Command
 {
-    protected $signature = 'snomed:import';
+    protected $signature = 'snomed:import {--chunk=1000}';
 
     protected $description = 'Import snomed data to database';
 
@@ -48,16 +48,16 @@ class ImportCommand extends Command
         $this->extractZip();
 
         $this->info('Importing Concepts');
-        app(ImportConceptAction::class)->execute($this->updatedTimestamp, $prevReleaseEffectiveTime);
+        app(ImportConceptAction::class)->execute($this->updatedTimestamp, $prevReleaseEffectiveTime, $this->getChunk());
 
         $this->info('Importing Description');
-        app(ImportDescriptionAction::class)->execute($this->updatedTimestamp, $prevReleaseEffectiveTime);
+        app(ImportDescriptionAction::class)->execute($this->updatedTimestamp, $prevReleaseEffectiveTime, $this->getChunk());
 
         $this->info('Importing Refset Language');
-        app(ImportRefsetLanguageAction::class)->execute($this->updatedTimestamp, $prevReleaseEffectiveTime);
+        app(ImportRefsetLanguageAction::class)->execute($this->updatedTimestamp, $prevReleaseEffectiveTime, $this->getChunk());
 
         $this->info('ImportTextDefinition');
-        app(ImportTextDefinitionAction::class)->execute($this->updatedTimestamp, $prevReleaseEffectiveTime);
+        app(ImportTextDefinitionAction::class)->execute($this->updatedTimestamp, $prevReleaseEffectiveTime, $this->getChunk());
 
         $this->info('Setting Release Effective Time');
         app(SnomedMetaActions::class)->setReleaseEffectiveTime($this->updatedTimestamp);
@@ -69,6 +69,11 @@ class ImportCommand extends Command
         preg_match($re, $this->selectedZipFile, $matches, PREG_OFFSET_CAPTURE, 0);
 
         return Carbon::parse($matches[0][0]);
+    }
+
+    protected function getChunk(): int
+    {
+        return (int) $this->option('chunk');
     }
 
     public function extractZip(): void

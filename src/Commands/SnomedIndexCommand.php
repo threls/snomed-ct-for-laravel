@@ -14,7 +14,7 @@ use Threls\SnomedCTForLaravel\Enums\DescriptionType;
 
 class SnomedIndexCommand extends Command
 {
-    protected $signature = 'snomed:index {--chunk=10000}';
+    protected $signature = 'snomed:index {--chunk=1000}';
 
     protected $description = 'Build the snomed indices table';
 

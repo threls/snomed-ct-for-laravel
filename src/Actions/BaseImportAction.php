@@ -40,7 +40,7 @@ abstract class BaseImportAction
         return static::getFile($folder, $suffix);
     }
 
-    final public function execute(Carbon $zipUpdateTimestamp, ?Carbon $since): void
+    final public function execute(Carbon $zipUpdateTimestamp, ?Carbon $since, ?int $chunk): void
     {
         LazyCollection::make(function () use ($zipUpdateTimestamp) {
             $handle = fopen($this->getFilePath($zipUpdateTimestamp), 'r');
@@ -52,7 +52,7 @@ abstract class BaseImportAction
             fclose($handle);
         })
             ->skip(1)
-            ->chunk(5000)
+            ->chunk($chunk)
             ->each(function (LazyCollection $chunk) use ($since) {
                 $records = $chunk->map(function ($row) use ($since) {
                     $map = $this->map($row);
