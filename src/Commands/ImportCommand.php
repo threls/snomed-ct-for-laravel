@@ -84,7 +84,7 @@ class ImportCommand extends Command
         $zipArchive = new ZipArchive;
         $res = $zipArchive->open($zipPath);
 
-        if ($res === false) {
+        if ($res == false) {
             $this->error('Extract cannot be completed');
 
             return;
