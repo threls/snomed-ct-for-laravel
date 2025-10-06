@@ -22,8 +22,7 @@ class ImportSnomedJob implements ShouldQueue
         public array $upsertUniqueBy,
         public array $upsertUpdate,
         public string $tableConnection
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.
