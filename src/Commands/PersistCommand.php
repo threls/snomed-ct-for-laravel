@@ -12,7 +12,7 @@ use Threls\SnomedCTForLaravel\Models\SnomedIndex;
 
 class PersistCommand extends Command
 {
-    protected $signature = 'snomed:persist {--chunk=5000} {--index}';
+    protected $signature = 'snomed:persist {--chunk=1000} {--index}';
 
     protected $description = 'Move snomed indices table to MySQL';
 

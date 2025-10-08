@@ -27,7 +27,7 @@ class SnomedMetaActions
         );
     }
 
-    public function getReleaseEffectiveTime(): Carbon|null
+    public function getReleaseEffectiveTime(): ?Carbon
     {
         $effectiveTime = $this->getBuilder()->where('key', 'effectiveTime')->first();
 
